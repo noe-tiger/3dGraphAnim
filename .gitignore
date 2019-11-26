@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+
+CMakeFiles/*
+cmake_install.cmake
+conanbuildinfo.cmake
+conanbuildinfo.txt
+conaninfo.txt
+conan.lock
+graph_info.json
+Makefile
+CMakeCache.txt
+bin/*
+build/*
