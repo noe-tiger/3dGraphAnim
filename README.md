@@ -4,3 +4,5 @@
 ```
 	bash bld
 ```
+
+source for conan : `https://bintray.com/conan/conan-center`
