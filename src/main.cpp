@@ -4,32 +4,131 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
 #include <sstream>
 #include <fstream>
 
-void inputs(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_RIGHT ) == GLFW_PRESS) { // get key input
-      std::cout << "right" << std::endl;
-    }
+GLFWwindow *window;
 
-    if (glfwJoystickPresent( GLFW_JOYSTICK_1 )) { // get controller input
-      int axesCount;
-      const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-      for (int i = 0; i < axesCount; i += 1) {
-      	std::cout << axes[i] << " ";
-      }
-      // std::cout << std::endl;
-      std::cout << " == ";
+glm::mat4 ViewMatrix;
+glm::mat4 ProjectionMatrix;
 
-      int buttonsCount;
+glm::mat4 getViewMatrix(){
+  return ViewMatrix;
+}
+glm::mat4 getProjectionMatrix(){
+  return ProjectionMatrix;
+}
+
+// Initial position : on +Z
+glm::vec3 position = glm::vec3( 0, 0, 5 ); 
+// Initial horizontal angle : toward -Z
+float horizontalAngle = 3.14f;
+// Initial vertical angle : none
+float verticalAngle = 0.0f;
+// Initial Field of View
+float initialFoV = 45.0f;
+
+float speed = 3.0f; // 3 units / second
+float mouseSpeed = 0.005f;
+
+
+
+void computeMatricesFromInputs(GLFWwindow *window){
+
+	// glfwGetTime is called only once, the first time this function is called
+	static double lastTime = glfwGetTime();
+
+	// Compute time difference between current and last frame
+	double currentTime = glfwGetTime();
+	float deltaTime = float(currentTime - lastTime);
+
+	// Get mouse position
+	double xpos, ypos;
+	// std::cout << "INNONfg" << std::endl;
+	glfwGetCursorPos(window, &xpos, &ypos);
+
+	// // Reset mouse position for next frame
+	glfwSetCursorPos(window, 1024/2, 768/2);
+
+	// Compute new orientation
+	horizontalAngle += mouseSpeed * float(1024/2 - 1024/2 );
+	verticalAngle   += mouseSpeed * float( 768/2 - 768/2 );
+
+	// Direction : Spherical coordinates to Cartesian coordinates conversion
+	glm::vec3 direction(
+		cos(verticalAngle) * sin(horizontalAngle), 
+		sin(verticalAngle),
+		cos(verticalAngle) * cos(horizontalAngle)
+	);
+	
+	// Right vector
+	glm::vec3 right = glm::vec3(
+		sin(horizontalAngle - 3.14f/2.0f), 
+		0,
+		cos(horizontalAngle - 3.14f/2.0f)
+	);
+	
+	// Up vector
+	glm::vec3 up = glm::cross( right, direction );
+	// Move forward
+	if (glfwGetKey( window, GLFW_KEY_UP ) == GLFW_PRESS){
+		position += direction * deltaTime * speed;
+	}
+	// Move backward
+	if (glfwGetKey( window, GLFW_KEY_DOWN ) == GLFW_PRESS){
+		position -= direction * deltaTime * speed;
+	}
+	// Strafe right
+	if (glfwGetKey( window, GLFW_KEY_RIGHT ) == GLFW_PRESS){
+		position += right * deltaTime * speed;
+	}
+	// Strafe left
+	if (glfwGetKey( window, GLFW_KEY_LEFT ) == GLFW_PRESS){
+		position -= right * deltaTime * speed;
+	}
+	if (glfwGetKey( window, GLFW_KEY_SPACE ) == GLFW_PRESS){
+		position += up * deltaTime * speed;
+	}
+	if (glfwGetKey( window, GLFW_KEY_LEFT_SHIFT ) == GLFW_PRESS){
+		position -= up * deltaTime * speed;
+	}
+
+	float FoV = initialFoV;// - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
+
+	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
+	ProjectionMatrix = glm::perspective(glm::radians(FoV), 4.0f / 3.0f, 0.1f, 100.0f);
+	// Camera matrix
+	ViewMatrix       = glm::lookAt(
+				       position,           // Camera is here
+				       position+direction, // and looks here : at the same position, plus "direction"
+				       up                  // Head is up (set to 0,-1,0 to look upside-down)
+				       );
+
+	// For the next frame, the "last time" will be "now"
+	lastTime = currentTime;
+
+
+
+	if (glfwJoystickPresent( GLFW_JOYSTICK_1 )) { // get controller input
+	  int axesCount;
+	  const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
+	  for (int i = 0; i < axesCount; i += 1) {
+	    std::cout << axes[i] << " ";
+	  }
+	  // std::cout << std::endl;
+	  std::cout << " == ";
+	  
+	  int buttonsCount;
       const unsigned char * buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonsCount);
       for (int i = 0; i < buttonsCount; i += 1) {
     	std::cout << int(buttons[i]) << " ";
       }
       std::cout << std::endl;
     }
+
 }
 
 bool loadOBJ(const char * path,
@@ -190,196 +289,260 @@ GLuint LoadShaders(const char * vertex_file_path, const char * fragment_file_pat
 	return ProgramID;
 }
 
-int main()
+#define FOURCC_DXT1 0x31545844 // Equivalent to "DXT1" in ASCII
+#define FOURCC_DXT3 0x33545844 // Equivalent to "DXT3" in ASCII
+#define FOURCC_DXT5 0x35545844 // Equivalent to "DXT5" in ASCII
+
+GLuint loadDDS(const char * imagepath){
+
+	unsigned char header[124];
+
+	FILE *fp; 
+ 
+	/* try to open the file */ 
+	fp = fopen(imagepath, "rb"); 
+	if (fp == NULL){
+		printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath); getchar(); 
+		return 0;
+	}
+   
+	/* verify the type of file */ 
+	char filecode[4]; 
+	fread(filecode, 1, 4, fp); 
+	if (strncmp(filecode, "DDS ", 4) != 0) { 
+		fclose(fp); 
+		return 0; 
+	}
+	
+	/* get the surface desc */ 
+	fread(&header, 124, 1, fp); 
+
+	unsigned int height      = *(unsigned int*)&(header[8 ]);
+	unsigned int width	     = *(unsigned int*)&(header[12]);
+	unsigned int linearSize	 = *(unsigned int*)&(header[16]);
+	unsigned int mipMapCount = *(unsigned int*)&(header[24]);
+	unsigned int fourCC      = *(unsigned int*)&(header[80]);
+
+ 
+	unsigned char * buffer;
+	unsigned int bufsize;
+	/* how big is it going to be including all mipmaps? */ 
+	bufsize = mipMapCount > 1 ? linearSize * 2 : linearSize; 
+	buffer = (unsigned char*)malloc(bufsize * sizeof(unsigned char)); 
+	fread(buffer, 1, bufsize, fp); 
+	/* close the file pointer */ 
+	fclose(fp);
+
+	unsigned int components  = (fourCC == FOURCC_DXT1) ? 3 : 4; 
+	unsigned int format;
+	switch(fourCC) 
+	{ 
+	case FOURCC_DXT1: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT; 
+		break; 
+	case FOURCC_DXT3: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT; 
+		break; 
+	case FOURCC_DXT5: 
+		format = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+		break; 
+	default: 
+		free(buffer); 
+		return 0; 
+	}
+
+	// Create one OpenGL texture
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1);	
+	
+	unsigned int blockSize = (format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ? 8 : 16; 
+	unsigned int offset = 0;
+
+	/* load the mipmaps */ 
+	for (unsigned int level = 0; level < mipMapCount && (width || height); ++level) 
+	{ 
+		unsigned int size = ((width+3)/4)*((height+3)/4)*blockSize; 
+		glCompressedTexImage2D(GL_TEXTURE_2D, level, format, width, height,  
+			0, size, buffer + offset); 
+	 
+		offset += size; 
+		width  /= 2; 
+		height /= 2; 
+
+		// Deal with Non-Power-Of-Two textures. This code is not included in the webpage to reduce clutter.
+		if(width < 1) width = 1;
+		if(height < 1) height = 1;
+
+	} 
+
+	free(buffer); 
+
+	return textureID;
+
+
+}
+
+int main( void )
 {
-  if( !glfwInit() )
-    {
-      // fprintf( stderr, "Failed to initialize GLFW\n" );
-      return -1;
-    }
-  glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // On veut OpenGL 3.3
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // On ne veut pas l'ancien OpenGL
-  
-  // Ouvre une fenêtre et crée son contexte OpenGl
-  GLFWwindow* window; // (Dans le code source qui accompagne, cette variable est globale)
-  window = glfwCreateWindow( 1024, 768, "Tetris 3D", NULL, NULL);
-  if( window == NULL ){
-    glfwTerminate();
-    return -1;
-  }
-  glfwMakeContextCurrent(window); // Initialise GLEW
-  glewExperimental=true; // Nécessaire dans le profil de base
-  if (glewInit() != GLEW_OK) {
-    return -1;
-  }
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+  GLFWwindow *window;
+	// Initialise GLFW
+	if( !glfwInit() )
+	{
+		fprintf( stderr, "Failed to initialize GLFW\n" );
+		return -1;
+	}
+	
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  // std::vector< glm::vec3 > vertices;
-  // std::vector< glm::vec2 > uvs;
-  // std::vector< glm::vec3 > normals; // Won't be used at the moment.
-  // bool res = loadOBJ("../sources/sample.obj", vertices, uvs, normals);
-  // load object
+	// Open a window and create its OpenGL context
+	window = glfwCreateWindow( 1024, 768, "Tutorial 05 - Textured Cube", NULL, NULL);
+	if( window == NULL ){
+		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);
 
-  static const GLfloat vertices[] = {
-    -1.0f,-1.0f,-1.0f, // triangle 1 : begin
-    -1.0f,-1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f, // triangle 1 : end
-    1.0f, 1.0f,-1.0f, // triangle 2 : begin
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f, // triangle 2 : end
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    -1.0f,-1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    -1.0f,-1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f,-1.0f,
-    1.0f,-1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f,-1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f,-1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 1.0f,
-    -1.0f, 1.0f, 1.0f,
-    1.0f,-1.0f, 1.0f
-  };
+	// Initialize GLEW
+	glewExperimental = true; // Needed for core profile
+	if (glewInit() != GLEW_OK) {
+		fprintf(stderr, "Failed to initialize GLEW\n");
+		return -1;
+	}
 
-  static const GLfloat triangle_vertex[] = {
-    2.0f, 2.0f, 0.0f,
-    3.0f, 2.0f, 0.0f,
-    0.0f,  3.0f, 0.0f,
-  };
+	// Ensure we can capture the escape key being pressed below
+	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwPollEvents();
+	glfwSetCursorPos(window, 1024/2, 768/2);
+	// Dark blue background
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
-  static GLfloat g_color_buffer_data[12*3*3];
-  for (int v = 0; v < 12*3 ; v++){
-    g_color_buffer_data[3*v+0] = float(rand() % 100) / 100;
-    g_color_buffer_data[3*v+1] = float(rand() % 100) / 100;
-    g_color_buffer_data[3*v+2] = float(rand() % 100) / 100;
-  }
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
 
-  GLuint VertexArrayID;
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
-  
-  GLuint vertexbuffer;
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	GLuint VertexArrayID;
+	glGenVertexArrays(1, &VertexArrayID);
+	glBindVertexArray(VertexArrayID);
 
-  GLuint trianglebuffer;
-  glGenBuffers(1, &trianglebuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, trianglebuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(triangle_vertex), triangle_vertex, GL_STATIC_DRAW);
+	// Create and compile our GLSL program from the shaders
+	GLuint programID = LoadShaders( "../vertex.glsm", "../shader.glsm" );
 
-  GLuint colorbuffer;
-  glGenBuffers(1, &colorbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+	// Get a handle for our "MVP" uniform
+	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
-  
-  GLuint programID = LoadShaders( "../SimpleVertexShader.vertexshader", "../SimpleFragmentShader.fragmentshader" );
-  glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glUseProgram(programID);
+	// Load the texture using any two methods
+	GLuint Texture = loadDDS("../sources/uvtemplate.DDS");
+	
+	// Get a handle for our "myTextureSampler" uniform
+	GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
 
-  
-  do{
+	std::vector<glm::vec3> vertices;
+	std::vector<glm::vec2> uvs;
+	std::vector<glm::vec3> normals;
+	bool res = loadOBJ("../sources/sample.obj", vertices, uvs, normals);
+	
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
 
-    // Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-    glm::mat4 Projection = glm::perspective(glm::radians(45.0f), (float) 1024 / (float) 768, 0.1f, 100.0f);
-    
-    // Or, for an ortho camera :
-    //glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f); // In world coordinates
-    
-    // Camera matrix
-    glm::mat4 View = glm::lookAt(
-        glm::vec3(10,10,10), // Camera is at (4,3,3), in World Space
-	glm::vec3(0,0,0), // and looks at the origin
-	glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-    );
-    
-    // Model matrix : an identity matrix (model will be at the origin)
-    glm::mat4 Model = glm::mat4(1.0f);
-    // Our ModelViewProjection : multiplication of our 3 matrices
-    glm::mat4 mvp = Projection * View * Model; // Remember, matrix multiplication is the other way around
-    
-    // Get a handle for our "MVP" uniform
-    // Only during the initialisation
-    GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-    
-    // Send our transformation to the currently bound shader, in the "MVP" uniform
-    // This is done in the main loop since each model will have a different MVP matrix (At least for the M part)
-    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+	GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+	
+	do{
 
-    
-    // 1rst attribute buffer : vertices
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glVertexAttribPointer(
-    			  0,
-    			  3,                  // size
-    			  GL_FLOAT,           // type
-    			  GL_FALSE,           // normalized?
-    			  0,                  // stride
-    			  (void*)0            // array buffer offset
-    			  );
-    // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0, 12*3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    glDisableVertexAttribArray(0);
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // 2nd attribute buffer : colors
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-    glVertexAttribPointer(
-    			  1,
-    			  3,                  // size
-    			  GL_FLOAT,           // type
-    			  GL_FALSE,           // normalized?
-    			  0,                  // stride
-    			  (void*)0            // array buffer offset
-    			  );
+		// Use our shader
+		glUseProgram(programID);
 
+		// std::cout << "TEST-" << std::endl;
 
-    /* draw triangle */
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, trianglebuffer);
-    glVertexAttribPointer(
-    			  0,
-    			  3,                  // size
-    			  GL_FLOAT,           // type
-    			  GL_FALSE,           // normalized?
-    			  0,                  // stride
-    			  (void*)0            // array buffer offset
-    			  );
-    // Draw the triangle !
-    glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-    glDisableVertexAttribArray(0);
+		// inputs(window);
+		computeMatricesFromInputs(window);
+		// std::cout << "TEST0" << std::endl;
 
-    
-    // Swap buffers
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+		glm::mat4 ProjectionMatrix = getProjectionMatrix();
+	// std::cout << "TEST" << std::endl;
+		glm::mat4 ViewMatrix = getViewMatrix();
+	// std::cout << "TEST2" << std::endl;
+		glm::mat4 ModelMatrix = glm::mat4(1.0);
+	// std::cout << "TEST3" << std::endl;
+		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-    inputs(window);
-    
-  } // Vérifie si on a appuyé sur la touche échap (ESC) ou si la fenêtre a été fermée
-  while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-	 glfwWindowShouldClose(window) == 0 );
+	// std::cout << "TEST4" << std::endl;
+		// Send our transformation to the currently bound shader, 
+		// in the "MVP" uniform
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+		// Bind our texture in Texture Unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture);
+		// Set our "myTextureSampler" sampler to use Texture Unit 0
+		glUniform1i(TextureID, 0);
+
+		// 1rst attribute buffer : vertices
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : UVs
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			2,                                // size : U+V => 2
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, vertices.size()); // 12*3 indices starting at 0 -> 12 triangles
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+
+		// Swap buffers
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
+	} // Check if the ESC key was pressed or the window was closed
+	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
+		   glfwWindowShouldClose(window) == 0 );
+
+	// Cleanup VBO and shader
+	glDeleteBuffers(1, &vertexbuffer);
+	glDeleteBuffers(1, &uvbuffer);
+	glDeleteProgram(programID);
+	glDeleteTextures(1, &Texture);
+	glDeleteVertexArrays(1, &VertexArrayID);
+
+	// Close OpenGL window and terminate GLFW
+	glfwTerminate();
+
+	return 0;
 }
