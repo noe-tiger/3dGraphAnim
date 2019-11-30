@@ -148,7 +148,6 @@ int main( void )
 		computeMatricesFromInputs();
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
-		glm::mat4 ModelMatrix = glm::mat4(1.0);
 		gOrientation.y += 0.0031415/ 2.0f * deltaTime;
 		gOrientation.x += 0.0031415/ 2.0f * deltaTime;
 		gOrientation.z += 0.0031415/ 2.0f * deltaTime;
