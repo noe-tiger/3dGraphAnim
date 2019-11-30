@@ -14,84 +14,81 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
-using namespace glm;
 
 #include "controls.hpp"
+#include "object.hpp"
 
-void draw(glm::vec3 gOrientation, glm::vec3 gPosition, glm::vec3 gScale, GLuint vertexbuffer, GLuint uvbuffer, GLuint normalbuffer, GLuint MatrixID, GLuint ModelMatrixID, GLuint ViewMatrixID, GLuint LightID, GLuint TextureID, GLuint Texture, std::vector<glm::vec3> vertices, GLFWwindow *window) {
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix = getViewMatrix();
+namespace Tetris {
+  Cubi::Cubi(GLuint matrixID,
+	     GLuint modelMatrixID,
+	     GLuint viewMatrixID,
+	     GLuint lightID,
+	     GLuint textureID,
+	     GLFWwindow *window) {
+    this->_matrixID = matrixID;
+    this->_modelMatrixID = modelMatrixID;
+    this->_viewMatrixID = viewMatrixID;
+    this->_lightID = lightID;
+    this->_textureID = textureID;
+    this->_window = window;
+  }
 
-		glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation.y, gOrientation.x, gOrientation.z);
-		glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, gPosition);
-		glm::mat4 ScalingMatrix = glm::scale(TranslationMatrix, gScale);
-		glm::mat4 ModelMatrix =  ScalingMatrix;
+  Cubi::~Cubi() {
+    glDeleteBuffers(1, &this->_vertexbuffer);
+    glDeleteBuffers(1, &this->_uvbuffer);
+    glDeleteBuffers(1, &this->_normalbuffer);
+  }
 
-		// ProjectionMatrix *= ;
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+  void Cubi::setupObject(size_t objSize,
+			 GLuint vertexbuffer,
+			 GLuint uvbuffer,
+			 GLuint normalbuffer,
+			 GLuint texture) {
+    this->_objSize = objSize;
+    this->_vertexbuffer = vertexbuffer;
+    this->_uvbuffer = uvbuffer;
+    this->_normalbuffer = normalbuffer;
+    this->_texture = texture;
+  }
+  
+  void Cubi::setupPosition(glm::vec3 orientation,
+			   glm::vec3 position,
+			   glm::vec3 scale,
+			   glm::vec3 lightPos) {
+    this->_orientation = orientation;
+    this->_position = position;
+    this->_scale = scale;
+    this->_lightPos = lightPos;
+  }
 
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(ModelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		glUniformMatrix4fv(ViewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+  void Cubi::draw() {
+    glm::mat4 ProjectionMatrix = getProjectionMatrix();
+    glm::mat4 ViewMatrix = getViewMatrix();
+    glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
+    glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, this->_position);
+    glm::mat4 ModelMatrix = glm::scale(TranslationMatrix, this->_scale);
+    glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-		glm::vec3 lightPos = glm::vec3(4,4,4);
-		glUniform3f(LightID, lightPos.x, lightPos.y, lightPos.z);
+    glUniformMatrix4fv(this->_matrixID, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(this->_modelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+    glUniformMatrix4fv(this->_viewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
 
-		// Bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, Texture);
-		// Set our "myTextureSampler" sampler to use Texture Unit 0
-		glUniform1i(TextureID, 0);
-
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// 2nd attribute buffer : UVs
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute
-			2,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// 3rd attribute buffer : normals
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-		glVertexAttribPointer(
-			2,                                // attribute
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// Draw the triangles !
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size() );
-
-				glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
-
-}
-
-void clanObject(GLuint vertexbuffer, GLuint uvbuffer, GLuint normalbuffer) {
-  glDeleteBuffers(1, &vertexbuffer);
-  glDeleteBuffers(1, &uvbuffer);
-  glDeleteBuffers(1, &normalbuffer);
+    glUniform3f(this->_lightID, this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->_texture);
+    glUniform1i(this->_textureID, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_uvbuffer);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_normalbuffer);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDrawArrays(GL_TRIANGLES, 0, this->_objSize);
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+  }
 }
