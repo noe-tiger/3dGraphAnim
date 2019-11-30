@@ -75,10 +75,7 @@ int main()
   vec3 gScale(1.0, 1.0, 1.0);
   vec3 gLight(4, 4, 4);
 
-
-  // Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, vertices.size(), vertexbuffer, uvbuffer, normalbuffer, Texture);
   Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, vertices.size(), vertexbuffer, uvbuffer, normalbuffer, Texture);
-  // object1.setupObject();
   
   
   double lastTime = glfwGetTime();
@@ -93,17 +90,11 @@ int main()
       nbFrames = 0;
       lastTime += 1.0;
     }
-    
-    // Clear the screen
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    // Use our shader
     glUseProgram(programID);
     
-    // Compute the MVP matrix from keyboard and mouse input
     computeMatricesFromInputs(window);
-    
-    
     
     gOrientation.y += 0.0031415/ 2.0f * deltaTime;
     // gOrientation.x += 0.0031415/ 2.0f * deltaTime;
@@ -116,34 +107,7 @@ int main()
     // gScale.z -= 0.1 * deltaTime;
 
     object1.setupPosition(gOrientation, gPosition, gScale, gLight);
-
     object1.draw();
-
-
-    
-    /*
-gOrientation2, gPosition2, gScale2, vertexbuffer2, uvbuffer2, normalbuffer2, MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, Texture, vertices, window
-     */
-    // object1.draw(gOrientation,
-    // 		 gPosition,
-    // 		 gScale,
-
-    // 		 vertexbuffer,
-    // 		 uvbuffer,
-    // 		 normalbuffer,
-
-    // 		 MatrixID,
-    // 		 ModelMatrixID,
-    // 		 ViewMatrixID,
-
-    // 		 LightID,
-    // 		 TextureID,
-    // 		 Texture,
-
-    // 		 vertices,
-    // 		 window);
-		
-
 
     glfwSwapBuffers(window);
     glfwPollEvents();

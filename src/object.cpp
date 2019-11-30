@@ -40,7 +40,6 @@ namespace Tetris {
     _normalbuffer(normalbuffer),
     _texture(texture)
   {
-    
   }
 
   Cubi::~Cubi() {
@@ -60,72 +59,33 @@ namespace Tetris {
   }
 
   void Cubi::draw() {
-		glm::mat4 ProjectionMatrix = getProjectionMatrix();
-		glm::mat4 ViewMatrix = getViewMatrix();
-
-		glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
-		glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, this->_position);
-		glm::mat4 ModelMatrix = glm::scale(TranslationMatrix, this->_scale);
-
-		// ProjectionMatrix *= ;
-		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-		glUniformMatrix4fv(this->_matrixID, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix4fv(this->_modelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-		glUniformMatrix4fv(this->_viewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-;
-		glUniform3f(this->_lightID, this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
-
-		// Bind our texture in Texture Unit 0
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, this->_texture);
-		// Set our "myTextur/eSampler" sampler to use Texture Unit 0
-		glUniform1i(this->_textureID, 0);
-
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-
-		// 2nd attribute buffer : UVs
-		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, this->_uvbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute
-			2,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// 3rd attribute buffer : normals
-		glEnableVertexAttribArray(2);
-		glBindBuffer(GL_ARRAY_BUFFER, this->_normalbuffer);
-		glVertexAttribPointer(
-			2,                                // attribute
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-
-		// Draw the triangles !
-		glDrawArrays(GL_TRIANGLES, 0, this->_objSize );
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glDisableVertexAttribArray(2);
+    glm::mat4 ProjectionMatrix = getProjectionMatrix();
+    glm::mat4 ViewMatrix = getViewMatrix();
+    glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
+    glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, this->_position);
+    glm::mat4 ModelMatrix = glm::scale(TranslationMatrix, this->_scale);
+    glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
+    
+    glUniformMatrix4fv(this->_matrixID, 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(this->_modelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
+    glUniformMatrix4fv(this->_viewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
+    glUniform3f(this->_lightID, this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->_texture);
+    glUniform1i(this->_textureID, 0);
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_uvbuffer);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_normalbuffer);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDrawArrays(GL_TRIANGLES, 0, this->_objSize );
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
 
 }
 
