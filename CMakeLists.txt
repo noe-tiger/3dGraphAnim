@@ -5,10 +5,16 @@ add_definitions("-std=c++17 -fPIC")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+include_directories(
+  "${CMAKE_SOURCE_DIR}/includes"
+)
+
 file(
   GLOB_RECURSE
   sources_tetris
   src/main.cpp
+  src/controls.cpp
+  src/loader.cpp
 )
 
 add_executable(tetris-binary ${sources_tetris})
