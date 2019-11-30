@@ -21,24 +21,24 @@
 namespace Tetris {
   class Cubi {
   public:
-    Cubi(GLuint matrixID,
-	 GLuint modelMatrixID,
-	 GLuint viewMatrixID,
-	 GLuint lightID,
-	 GLuint textureID,
-	 GLFWwindow *window);
+    Cubi(GLuint &matrixID,
+	 GLuint &modelMatrixID,
+	 GLuint &viewMatrixID,
+	 GLuint &lightID,
+	 GLuint &textureID,
+	 size_t objSize,
+	 GLuint &vertexbuffer,
+	 GLuint &uvbuffer,
+	 GLuint &normalbuffer,
+	 GLuint &texture);
     ~Cubi();
 
-    void setupObject(size_t objSize,
-		     GLuint vertexbuffer,
-		     GLuint uvbuffer,
-		     GLuint normalbuffer,
-		     GLuint texture);
-    void setupPosition(glm::vec3 orientation,
-		       glm::vec3 position,
-		       glm::vec3 scale,
-		       glm::vec3 lightPos);
+    void setupPosition(glm::vec3 &orientation,
+		       glm::vec3 &position,
+		       glm::vec3 &scale,
+		       glm::vec3 &lightPos);
     void draw();
+    
   private:
     
     glm::vec3 _orientation;
@@ -47,16 +47,15 @@ namespace Tetris {
     glm::vec3 _lightPos;
 
     size_t _objSize;
-    GLuint _vertexbuffer;
-    GLuint _uvbuffer;
-    GLuint _normalbuffer;
-    GLuint _texture;
+    GLuint &_vertexbuffer;
+    GLuint &_uvbuffer;
+    GLuint &_normalbuffer;
+    GLuint &_texture;
     
-    GLuint _matrixID;
-    GLuint _modelMatrixID;
-    GLuint _viewMatrixID;
-    GLuint _lightID;
-    GLuint _textureID;
-    GLFWwindow *_window;
+    GLuint &_matrixID;
+    GLuint &_modelMatrixID;
+    GLuint &_viewMatrixID;
+    GLuint &_lightID;
+    GLuint &_textureID;
   };
 }

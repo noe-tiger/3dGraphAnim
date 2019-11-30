@@ -73,10 +73,12 @@ int main()
   vec3 gOrientation(1.0, 1.0, 1.0);
   vec3 gPosition(-1.0, -1.0, -1.0);
   vec3 gScale(1.0, 1.0, 1.0);
+  vec3 gLight(4, 4, 4);
 
 
-  Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, window);
-  object1.setupObject(vertices.size(), vertexbuffer, uvbuffer, normalbuffer, Texture);
+  // Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, vertices.size(), vertexbuffer, uvbuffer, normalbuffer, Texture);
+  Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, vertices.size(), vertexbuffer, uvbuffer, normalbuffer, Texture);
+  // object1.setupObject();
   
   
   double lastTime = glfwGetTime();
@@ -113,8 +115,33 @@ int main()
     // gScale.y -= 0.1 * deltaTime;
     // gScale.z -= 0.1 * deltaTime;
 
-    object1.setupPosition(gOrientation, gPosition, gScale, glm::vec3(4, 4, 4));
+    object1.setupPosition(gOrientation, gPosition, gScale, gLight);
+
     object1.draw();
+
+
+    
+    /*
+gOrientation2, gPosition2, gScale2, vertexbuffer2, uvbuffer2, normalbuffer2, MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, Texture, vertices, window
+     */
+    // object1.draw(gOrientation,
+    // 		 gPosition,
+    // 		 gScale,
+
+    // 		 vertexbuffer,
+    // 		 uvbuffer,
+    // 		 normalbuffer,
+
+    // 		 MatrixID,
+    // 		 ModelMatrixID,
+    // 		 ViewMatrixID,
+
+    // 		 LightID,
+    // 		 TextureID,
+    // 		 Texture,
+
+    // 		 vertices,
+    // 		 window);
 		
 
 
