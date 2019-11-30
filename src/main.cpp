@@ -1,3 +1,4 @@
+#include <iostream>
 // Include standard headers
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@ GLFWwindow* window;
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/euler_angles.hpp>
 using namespace glm;
 
 #include "controls.hpp"
@@ -118,7 +120,23 @@ int main( void )
 	glUseProgram(programID);
 	GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
 
+
+	vec3 gOrientation(1.0, 1.0, 1.0);
+	vec3 gPosition(-1.0, -1.0, -1.0);
+	vec3 gScale(1.0, 1.0, 1.0);
+
+	double lastTime = glfwGetTime();
+	double lastFrameTime = lastTime;
+	int nbFrames = 0;
 	do{
+	  double currentTime = glfwGetTime();
+	  float deltaTime = (float)(currentTime - lastFrameTime);
+	  nbFrames += 1;
+	  if (currentTime - lastTime >= 1.0) {
+	    std::cout << 1000.0/double(nbFrames) << "ms/frame" << std::endl;
+	    nbFrames = 0;
+	    lastTime += 1.0;
+	  }
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -131,6 +149,22 @@ int main( void )
 		glm::mat4 ProjectionMatrix = getProjectionMatrix();
 		glm::mat4 ViewMatrix = getViewMatrix();
 		glm::mat4 ModelMatrix = glm::mat4(1.0);
+		gOrientation.y += 0.0031415/ 2.0f * deltaTime;
+		gOrientation.x += 0.0031415/ 2.0f * deltaTime;
+		gOrientation.z += 0.0031415/ 2.0f * deltaTime;
+		gPosition.x += 0.001 * deltaTime;
+		gPosition.y += 0.001 * deltaTime;
+		gPosition.z += 0.001 * deltaTime;
+		gScale.x -= 0.1 * deltaTime;
+		gScale.y -= 0.1 * deltaTime;
+		gScale.z -= 0.1 * deltaTime;
+
+		glm::mat4 RotationMatrix = eulerAngleYXZ(gOrientation.y, gOrientation.x, gOrientation.z);
+		glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, gPosition);
+		glm::mat4 ScalingMatrix = glm::scale(TranslationMatrix, gScale);
+		glm::mat4 ModelMatrix =  ScalingMatrix;
+
+		// ProjectionMatrix *= ;
 		glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
 		// Send our transformation to the currently bound shader, 
