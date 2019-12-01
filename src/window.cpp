@@ -10,7 +10,7 @@
 namespace Tetris {
   Window::Window(const char *vertexFile, const char *shaderFile) {
     if (!glfwInit()) {
-      fprintf(stderr, "Failed to initialize GLFW\n");
+      std::cerr << "failed to init glfw" << std::endl;
       return ;
     }
     glfwWindowHint(GLFW_SAMPLES, 4);
@@ -20,14 +20,14 @@ namespace Tetris {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     this->_window = glfwCreateWindow(1024, 768, "Tetris 3D - Noe TIGER", NULL, NULL);
     if(this->_window == NULL){
-      std::cout << "failed to init window" << std::endl;
+      std::cerr << "failed to init window" << std::endl;
       glfwTerminate();
       return ;
     }
     glfwMakeContextCurrent(this->_window);
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
-      std::cout << "failed to init glew" << std::endl;
+      std::cerr << "failed to init glew" << std::endl;
       glfwTerminate();
       return ;
     }

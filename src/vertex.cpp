@@ -6,7 +6,7 @@
 
 namespace Tetris {
   Vertex::Vertex(const char *filename) {
-    loadOBJ("../sources/suzanne.obj", this->_vertices, this->_uvs, this->_normals);
+    loadOBJ(filename, this->_vertices, this->_uvs, this->_normals);
 
     glGenBuffers(1, &this->_vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);
