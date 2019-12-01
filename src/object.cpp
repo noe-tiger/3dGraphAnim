@@ -19,33 +19,17 @@
 #include "object.hpp"
 
 namespace Tetris {
-  Cubi::Cubi(GLuint &matrixID,
-	     GLuint &modelMatrixID,
-	     GLuint &viewMatrixID,
-	     GLuint &lightID,
-	     GLuint &textureID,
-	     size_t objSize,
-	     GLuint &vertexbuffer,
-	     GLuint &uvbuffer,
-	     GLuint &normalbuffer,
+  Cubi::Cubi(Tetris::Window &window,
+	     Tetris::Vertex &vertex,
 	     Tetris::Texture &texture) :
-    _matrixID(matrixID),
-    _modelMatrixID(modelMatrixID),
-    _viewMatrixID(viewMatrixID),
-    _lightID(lightID),
-    _textureID(textureID),
-    _objSize(objSize),
-    _vertexbuffer(vertexbuffer),
-    _uvbuffer(uvbuffer),
-    _normalbuffer(normalbuffer),
+    _window(window),
+    _vertex(vertex),
     _texture(texture)
   {
   }
 
-  Cubi::~Cubi() {
-    glDeleteBuffers(1, &this->_vertexbuffer);
-    glDeleteBuffers(1, &this->_uvbuffer);
-    glDeleteBuffers(1, &this->_normalbuffer);
+  Cubi::~Cubi()
+  {
   }
   
   void Cubi::setupPosition(glm::vec3 &orientation,
@@ -66,23 +50,23 @@ namespace Tetris {
     glm::mat4 ModelMatrix = glm::scale(TranslationMatrix, this->_scale);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
     
-    glUniformMatrix4fv(this->_matrixID, 1, GL_FALSE, &MVP[0][0]);
-    glUniformMatrix4fv(this->_modelMatrixID, 1, GL_FALSE, &ModelMatrix[0][0]);
-    glUniformMatrix4fv(this->_viewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
-    glUniform3f(this->_lightID, this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
+    glUniformMatrix4fv(this->_window.getMatrixID(), 1, GL_FALSE, &MVP[0][0]);
+    glUniformMatrix4fv(this->_window.getModelMatrixID(), 1, GL_FALSE, &ModelMatrix[0][0]);
+    glUniformMatrix4fv(this->_window.getViewMatrixID(), 1, GL_FALSE, &ViewMatrix[0][0]);
+    glUniform3f(this->_window.getLightID(), this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, this->_texture.getTexture());
-    glUniform1i(this->_textureID, 0);
+    glUniform1i(this->_window.getTextureID(), 0);
     glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_vertex.getVertexBuffer());
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_vertex.getUvBuffer());
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(2);
-    glBindBuffer(GL_ARRAY_BUFFER, this->_normalbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->_vertex.getNormalBuffer());
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glDrawArrays(GL_TRIANGLES, 0, this->_objSize );
+    glDrawArrays(GL_TRIANGLES, 0, this->_vertex.getVertices().size());
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);

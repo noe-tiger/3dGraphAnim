@@ -19,19 +19,14 @@
 #include <glm/gtx/euler_angles.hpp>
 
 #include "texture.hpp"
+#include "vertex.hpp"
+#include "window.hpp"
 
 namespace Tetris {
   class Cubi {
   public:
-    Cubi(GLuint &matrixID,
-	 GLuint &modelMatrixID,
-	 GLuint &viewMatrixID,
-	 GLuint &lightID,
-	 GLuint &textureID,
-	 size_t objSize,
-	 GLuint &vertexbuffer,
-	 GLuint &uvbuffer,
-	 GLuint &normalbuffer,
+    Cubi(Tetris::Window &window,
+	 Tetris::Vertex &vertex,
 	 Tetris::Texture &texture);
     ~Cubi();
 
@@ -48,16 +43,18 @@ namespace Tetris {
     glm::vec3 _scale;
     glm::vec3 _lightPos;
 
-    size_t _objSize;
-    GLuint &_vertexbuffer;
-    GLuint &_uvbuffer;
-    GLuint &_normalbuffer;
+    // size_t _objSize;
+    // GLuint &_vertexbuffer;
+    // GLuint &_uvbuffer;
+    // GLuint &_normalbuffer;
+    Tetris::Window &_window;
+    Tetris::Vertex &_vertex;
     Tetris::Texture &_texture;
     
-    GLuint &_matrixID;
-    GLuint &_modelMatrixID;
-    GLuint &_viewMatrixID;
-    GLuint &_lightID;
-    GLuint &_textureID;
+    // GLuint &_matrixID;
+    // GLuint &_modelMatrixID;
+    // GLuint &_viewMatrixID;
+    // GLuint &_lightID;
+    // GLuint &_textureID;
   };
 }

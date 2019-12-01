@@ -21,90 +21,38 @@ using namespace glm;
 #include "object.hpp"
 #include "window.hpp"
 #include "texture.hpp"
+#include "vertex.hpp"
 
 int main()
 {
-  GLFWwindow* window = getWindow();
+  Tetris::Window window("../vertex.glsm", "../shader.glsm");
 
-  GLuint VertexArrayID;
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
-
-  // Create and compile our GLSL program from the shaders
-  GLuint programID = LoadShaders( "../vertex.glsm", "../shader.glsm" );
-
-  // Get a handle for our "MVP" uniform
-  GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-  GLuint ViewMatrixID = glGetUniformLocation(programID, "V");
-  GLuint ModelMatrixID = glGetUniformLocation(programID, "M");
-
-  // Load the texture
-  // GLuint Texture = loadBMP_custom("../sources/my_texture.bmp");
   Tetris::Texture texture1("../sources/my_texture.bmp");
   
-  // Get a handle for our "myTextureSampler" uniform
-  GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
-
-  // Get a handle for our "LightPosition" uniform
-  glUseProgram(programID);
-  GLuint LightID = glGetUniformLocation(programID, "LightPosition_worldspace");
-
-
-  // Read our .obj file
-  std::vector<glm::vec3> vertices;
-  std::vector<glm::vec2> uvs;
-  std::vector<glm::vec3> normals;
-  bool res = loadOBJ("../sources/suzanne.obj", vertices, uvs, normals);
-
-  GLuint vertexbuffer;
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-
-  GLuint uvbuffer;
-  glGenBuffers(1, &uvbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-  glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-
-  GLuint normalbuffer;
-  glGenBuffers(1, &normalbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-  glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
-
-
+  Tetris::Vertex objvertex1("../sources/suzanne.obj");
+  
   vec3 gOrientation(0.0, 0.0, 0.0);
   vec3 gPosition(-1.0, -1.0, -1.0);
   vec3 gScale(1.0, 1.0, 1.0);
   vec3 gLight(4, 4, 4);
 
-  Tetris::Cubi object1(MatrixID, ModelMatrixID, ViewMatrixID, LightID, TextureID, vertices.size(), vertexbuffer, uvbuffer, normalbuffer, texture1);
-  
+  Tetris::Cubi object1(window, objvertex1, texture1);
   
   double lastTime = glfwGetTime();
-  double lastFrameTime = lastTime;
-  int nbFrames = 0;
   do{
     double currentTime = glfwGetTime();
-    float deltaTime = (float)(currentTime - lastFrameTime);
-    nbFrames += 1;
-    if (currentTime - lastTime >= 1.0) {
-      std::cout << 1000.0/double(nbFrames) << "ms/frame" << std::endl;
-      nbFrames = 0;
-      lastTime += 1.0;
-    }
+    float deltaTime = (float)(currentTime - lastTime);
+    lastTime = currentTime;
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram(programID);
-
-    computeMatricesFromInputs(window);
+    window.clearScreen();
+    computeMatricesFromInputs(window.getWindow());
 
     if (glfwJoystickPresent( GLFW_JOYSTICK_1 )) { // get controller input
       int axesCount;
       const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-
-			gOrientation.y += axes[0]/ 2000.0f;
-	    gOrientation.x += axes[1]/ 2000.0f;
-
+      
+      gOrientation.y += axes[0]/ 20.0f;
+      gOrientation.x += axes[1]/ 20.0f;
 
     //   for (int i = 0; i < axesCount; i += 1) {
     //   	std::cout << axes[i] << " ";
@@ -134,14 +82,9 @@ int main()
     object1.setupPosition(gOrientation, gPosition, gScale, gLight);
     object1.draw();
 
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-
+    window.update();
   }
-  while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-	 glfwWindowShouldClose(window) == 0 );
-  
-  cleanWindow(programID, VertexArrayID);
+  while(!window.close());
   
   return 0;
 }

@@ -1,6 +1,7 @@
 
 #include "texture.hpp"
 #include "loader.hpp"
+
 namespace Tetris {
   Texture::Texture(const char *texturePath) {
     _texture = loadBMP(texturePath);

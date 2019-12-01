@@ -18,6 +18,7 @@ file(
   src/object.cpp
   src/window.cpp
   src/texture.cpp
+  src/vertex.cpp
 )
 
 add_executable(tetris-binary ${sources_tetris})
