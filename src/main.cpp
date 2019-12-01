@@ -1,23 +1,9 @@
-#include <iostream>
-// Include standard headers
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
-
-// Include GLEW
 #include <GL/glew.h>
-
-// Include GLFW
 #include <GLFW/glfw3.h>
-
-// Include GLM
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/euler_angles.hpp>
-using namespace glm;
 
 #include "controls.hpp"
-#include "loader.hpp"
 #include "object.hpp"
 #include "window.hpp"
 #include "texture.hpp"
@@ -31,10 +17,10 @@ int main()
   
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
   
-  vec3 gOrientation(0.0, 0.0, 0.0);
-  vec3 gPosition(-1.0, -1.0, -1.0);
-  vec3 gScale(1.0, 1.0, 1.0);
-  vec3 gLight(4, 4, 4);
+  glm::vec3 gOrientation(0.0, 0.0, 0.0);
+  glm::vec3 gPosition(-1.0, -1.0, -1.0);
+  glm::vec3 gScale(1.0, 1.0, 1.0);
+  glm::vec3 gLight(4, 4, 4);
 
   Tetris::Cubi object1(window, objvertex1, texture1);
   

@@ -1,3 +1,5 @@
+#include <GL/glew.h>
+#include <glm/gtx/euler_angles.hpp>
 
 #include "vertex.hpp"
 #include "loader.hpp"
