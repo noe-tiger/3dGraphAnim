@@ -28,7 +28,7 @@ namespace Tetris {
 	     GLuint &vertexbuffer,
 	     GLuint &uvbuffer,
 	     GLuint &normalbuffer,
-	     GLuint &texture) :
+	     Tetris::Texture &texture) :
     _matrixID(matrixID),
     _modelMatrixID(modelMatrixID),
     _viewMatrixID(viewMatrixID),
@@ -71,7 +71,7 @@ namespace Tetris {
     glUniformMatrix4fv(this->_viewMatrixID, 1, GL_FALSE, &ViewMatrix[0][0]);
     glUniform3f(this->_lightID, this->_lightPos.x, this->_lightPos.y, this->_lightPos.z);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->_texture);
+    glBindTexture(GL_TEXTURE_2D, this->_texture.getTexture());
     glUniform1i(this->_textureID, 0);
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, this->_vertexbuffer);

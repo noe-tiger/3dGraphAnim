@@ -73,10 +73,9 @@ GLFWwindow * getWindow() {
 	return window;
 }
 
-void cleanWindow(GLuint programID, GLuint Texture, GLuint VertexArrayID) {
+void cleanWindow(GLuint programID, GLuint VertexArrayID) {
 	// Cleanup VBO and shader
 	glDeleteProgram(programID);
-	glDeleteTextures(1, &Texture);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
 	// Close OpenGL window and terminate GLFW

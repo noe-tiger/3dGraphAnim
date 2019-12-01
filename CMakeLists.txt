@@ -17,6 +17,7 @@ file(
   src/loader.cpp
   src/object.cpp
   src/window.cpp
+  src/texture.cpp
 )
 
 add_executable(tetris-binary ${sources_tetris})

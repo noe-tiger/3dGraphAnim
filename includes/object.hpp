@@ -18,6 +18,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
+#include "texture.hpp"
+
 namespace Tetris {
   class Cubi {
   public:
@@ -30,7 +32,7 @@ namespace Tetris {
 	 GLuint &vertexbuffer,
 	 GLuint &uvbuffer,
 	 GLuint &normalbuffer,
-	 GLuint &texture);
+	 Tetris::Texture &texture);
     ~Cubi();
 
     void setupPosition(glm::vec3 &orientation,
@@ -50,7 +52,7 @@ namespace Tetris {
     GLuint &_vertexbuffer;
     GLuint &_uvbuffer;
     GLuint &_normalbuffer;
-    GLuint &_texture;
+    Tetris::Texture &_texture;
     
     GLuint &_matrixID;
     GLuint &_modelMatrixID;
