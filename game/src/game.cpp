@@ -21,10 +21,6 @@ namespace Tetris {
     _board_y = board_y;
     _score = 0;
     this->getNext();
-    for (int i = 0; i < _board_x; i += 1) {
-      if (i != 5)
-	_gameBoard[_board_y - 1][i].setState(true);
-    }
   }
 
   Game::~Game() {
@@ -49,8 +45,8 @@ namespace Tetris {
     }
   }
 
-  Tetris::Tetrimino Game::getNext() {
-    _next = _tetriminos[0]; // std::rand() % _tetriminos.size()
+  bool Game::getNext() {
+    _next = _tetriminos[std::rand() % _tetriminos.size()];
     _posNext.clear();
     auto format = _next.getFormat();
     for (int i = 0; i < format.size(); i += 1) {
@@ -63,7 +59,16 @@ namespace Tetris {
 	}
       }
     }
-    return _next;
+    for (int i = 0; i < _posNext.size(); i += 1) {
+      if (_posNext[i][1] < _gameBoard.size() && _posNext[i][0] < _gameBoard[0].size()) {
+	if (_gameBoard[_posNext[i][1]][_posNext[i][0]].full()) {
+	  return false;
+	}
+      } else {
+	return false;
+      }
+    }
+    return true;
   }
 
   bool Game::canRotate(bool wise) {
@@ -145,6 +150,7 @@ namespace Tetris {
 	}
       }
       if (row) {
+	_score += 1;
 	for (int j = 0; j < _board_x; j += 1) {
 	  _gameBoard[i][j].setState(false);
 	  for (int k = i; k > 0; k -= 1) {
@@ -155,10 +161,6 @@ namespace Tetris {
 	}
       }
     }
-    // for (int i = 0; i < _board_x; i += 1) {
-    //   if (i != 5)
-    // 	_gameBoard[_board_y - 1][i].setState(true);
-    // }    
   }
   
   bool Game::update() {
@@ -183,8 +185,8 @@ namespace Tetris {
 	_gameBoard[_posNext[i][1]][_posNext[i][0]] = tmp;
 	this->checkLine();
       }
-      this->getNext();
+      return this->getNext();
     }
-    return canMove;
+    return true;
   } 
 }

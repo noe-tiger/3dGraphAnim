@@ -34,7 +34,7 @@ namespace Tetris {
     void side(bool wise);
     bool update();
   private:
-    Tetris::Tetrimino getNext();
+    bool getNext();
     bool canRotate(bool wise);
     void checkLine();
 
@@ -42,6 +42,7 @@ namespace Tetris {
     std::vector<Tetris::Tetrimino> &_tetriminos;
     Tetris::Tetrimino _next;
     std::vector<std::vector<int>> _posNext;
-    int _board_x, _board_y, _score;
+    int _board_x, _board_y;
+    size_t _score;
   };
 }

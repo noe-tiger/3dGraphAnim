@@ -30,8 +30,8 @@ faire le jeu
    - rotation des pieces (faire tourner toutes les pieces) - done
    - descendre les pieces (les faire bouger) - done
  - gerer l'arret d une piece - done
- - gerer la destruction de ligne
- - gerer la fin de jeu
+ - gerer la destruction de ligne - done
+ - gerer la fin de jeu - done
    - gerer l'augmentation de difficulte
 
  - faire un mouvement de camera rigodrole
