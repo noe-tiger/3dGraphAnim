@@ -25,11 +25,11 @@ appliquer un shader general - done
 changer les get d input + changement de position de camera
 
 faire le jeu
- - generation de la carte
- - generation des pieces
-   - rotation des pieces (faire tourner toutes les pieces)
-   - descendre les pieces (les faire bouger)
- - gerer l'arret d une piece
+ - generation de la carte - done
+ - generation des pieces - done
+   - rotation des pieces (faire tourner toutes les pieces) - done
+   - descendre les pieces (les faire bouger) - done
+ - gerer l'arret d une piece - done
  - gerer la destruction de ligne
  - gerer la fin de jeu
    - gerer l'augmentation de difficulte

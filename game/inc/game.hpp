@@ -35,11 +35,13 @@ namespace Tetris {
     bool update();
   private:
     Tetris::Tetrimino getNext();
+    bool canRotate(bool wise);
+    void checkLine();
 
     std::vector<std::vector<Tetris::Cubi>> _gameBoard;
     std::vector<Tetris::Tetrimino> &_tetriminos;
     Tetris::Tetrimino _next;
     std::vector<std::vector<int>> _posNext;
-    int _board_x, _board_y;
+    int _board_x, _board_y, _score;
   };
 }
