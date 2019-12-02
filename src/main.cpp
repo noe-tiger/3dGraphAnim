@@ -52,13 +52,23 @@ int main()
   Tetris::Texture texture1("../sources/my_texture.bmp");
   
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
-  
+
+  // int x = 10;
+  // int y = 21;
+  // std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino");
+  // Tetris::Game game(x, y, tet);
+
   glm::vec3 gOrientation(0.0, 0.0, 0.0);
   glm::vec3 gPosition(-1.0, -1.0, -1.0);
   glm::vec3 gScale(1.0, 1.0, 1.0);
   glm::vec3 gLight(4, 4, 4);
 
-  Tetris::Cubi object1(window, objvertex1, texture1);
+  // std::vector<Tetris::Cubi> boardEdge;
+
+  // for (int i = 0; i < (x + 2 + (2 * y)); i += 1) {
+  //   Tetris::Cubi object(window, objvertex1, texture1);
+  //   boardEdge.push_back(object);
+  // }
   
   double lastTime = glfwGetTime();
   do{
@@ -71,8 +81,14 @@ int main()
 
     controller(&gOrientation);
     
-    object1.setupPosition(gOrientation, gPosition, gScale, gLight);
-    object1.draw();
+    // for (int i = 0; i < 1 // boardEdge.size()
+    // 	   ; i += 1) {
+    //   boardEdge[i].setupPosition(gOrientation, gPosition, gScale, gLight);
+    //   boardEdge[i].draw();
+    // }
+
+    // object1.setupPosition(gOrientation, gPosition, gScale, gLight);
+    // object1.draw();
 
     window.update();
   }
