@@ -6,13 +6,18 @@
 #include "object.hpp"
 
 namespace Tetris {
+  Cubi::Cubi() {
+    _full = false;
+  }
+  
   Cubi::Cubi(Tetris::Window &window,
 	     Tetris::Vertex &vertex,
-	     Tetris::Texture &texture) :
-    _window(window),
-    _vertex(vertex),
-    _texture(texture)
+	     Tetris::Texture &texture)
   {
+    _window = window;
+    _vertex = vertex;
+    _texture = texture;
+    _full = true;
   }
 
   Cubi::~Cubi()
@@ -30,6 +35,8 @@ namespace Tetris {
   }
 
   void Cubi::draw() {
+    if (!_full)
+      return ;
     glm::mat4 ProjectionMatrix = getProjectionMatrix();
     glm::mat4 ViewMatrix = getViewMatrix();
     glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
@@ -57,7 +64,21 @@ namespace Tetris {
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
+  }
 
-}
+  bool Cubi::full() {
+    return _full;
+  }
 
+  void Cubi::setState(bool state) {
+    _full = state;
+  }
+
+  void Cubi::disapear() {
+    _full = false;
+  }
+
+  // Tetris::Cubi &operator=(Tetris::Cubi &yes) {
+
+  // }
 }

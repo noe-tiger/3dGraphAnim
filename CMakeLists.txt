@@ -7,18 +7,24 @@ conan_basic_setup()
 
 include_directories(
   "${CMAKE_SOURCE_DIR}/includes"
+  "${CMAKE_SOURCE_DIR}/includes/game"
+  "${CMAKE_SOURCE_DIR}/includes/opengl"
 )
 
 file(
   GLOB_RECURSE
   sources_tetris
   src/main.cpp
-  src/controls.cpp
-  src/loader.cpp
-  src/object.cpp
-  src/window.cpp
-  src/texture.cpp
-  src/vertex.cpp
+
+  src/game/controls.cpp
+  src/game/game.cpp
+  src/game/tetrimino.cpp
+
+  src/opengl/loader.cpp
+  src/opengl/object.cpp
+  src/opengl/window.cpp
+  src/opengl/texture.cpp
+  src/opengl/vertex.cpp
 )
 
 add_executable(tetris-binary ${sources_tetris})

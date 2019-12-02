@@ -1,8 +1,11 @@
 #pragma once
 
+#include <GLFW/glfw3.h>
+
 namespace Tetris {
   class Window {
   public:
+    Window();
     Window(const char *vertexFile, const char *shaderFile);
     ~Window();
 

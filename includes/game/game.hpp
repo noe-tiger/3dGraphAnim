@@ -2,31 +2,32 @@
 #pragma once
 
 #include "tetrimino.hpp"
+#include "object.hpp"
 
 namespace Tetris {
-  class Cubi {
-  public:
-    Cubi() {
-      _full = false;
-    }
-    ~Cubi() {}
+  // class Cubi {
+  // public:
+  //   Cubi() {
+  //     _full = false;
+  //   }
+  //   ~Cubi() {}
 
-    void draw() {}
+  //   void draw() {}
 
-    bool full() { // ADD CA DANS L AUTRE CUBI
-      return _full;
-    }
+  //   bool full() { // ADD CA DANS L AUTRE CUBI
+  //     return _full;
+  //   }
 
-    void setState(bool state) { // ADD CA DANS L AUTRE CUBI
-      _full = state;
-    }
+  //   void setState(bool state) { // ADD CA DANS L AUTRE CUBI
+  //     _full = state;
+  //   }
 
-    void disapear() { // ADD FOR QUICK ANIMATION
-      _full = false;
-    }
-  private:
-    bool _full;
-  };
+  //   void disapear() { // ADD FOR QUICK ANIMATION
+  //     _full = false;
+  //   }
+  // private:
+  //   bool _full;
+  // };
 
   class Game {
   public:

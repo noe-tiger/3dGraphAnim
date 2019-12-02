@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include "game.hpp"
+#include "object.hpp"
 
 namespace Tetris {
   Game::Game(int board_x, int board_y, std::vector<Tetris::Tetrimino> &tetriminos) :

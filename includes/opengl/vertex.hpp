@@ -2,10 +2,12 @@
 #pragma once
 
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace Tetris {
   class Vertex  {
   public:
+    Vertex();
     Vertex(const char *filename);
     ~Vertex();
 

@@ -5,6 +5,10 @@
 #include "loader.hpp"
 
 namespace Tetris {
+  Vertex::Vertex()
+  {
+  }
+
   Vertex::Vertex(const char *filename) {
     loadOBJ(filename, this->_vertices, this->_uvs, this->_normals);
 
