@@ -16,7 +16,10 @@ namespace Tetris {
     _texture(texture)
   {
     _full = full;
-    _scal = 1.0;
+    if (full == false)
+      _scal = 0.0;
+    else
+      _scal = 1.0;
   }
 
   Cubi::~Cubi()
@@ -34,8 +37,10 @@ namespace Tetris {
   }
 
   void Cubi::draw() {
-    if (!_full)
+    if (!_full && _scal == 0.0)
       return ;
+    else if (!_full)
+      this->disapear();
     glm::mat4 ProjectionMatrix = getProjectionMatrix();
     glm::mat4 ViewMatrix = getViewMatrix();
     glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
@@ -77,7 +82,18 @@ namespace Tetris {
   }
 
   void Cubi::disapear() {
-    
-    _full = false;
+    if (_scal > 0.0) {
+      _scal -= 0.01;
+      _scale.x *= _scal;
+      _scale.y *= _scal;
+      _scale.z *= _scal;
+    } else {
+      _full = false;
+      _scal = 0.0;
+    }
+  }
+
+  bool Cubi::animDone() {
+    return (!_full && _scal == 0.0);
   }
 }

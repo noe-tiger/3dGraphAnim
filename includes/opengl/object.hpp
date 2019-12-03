@@ -22,6 +22,7 @@ namespace Tetris {
     bool full();
     void setState(bool state);
     void disapear();
+    bool animDone();
     Tetris::Cubi &operator=(const Tetris::Cubi &yes) {
       this->_window = yes._window;
       this->_vertex = yes._vertex;

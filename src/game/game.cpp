@@ -166,7 +166,7 @@ namespace Tetris {
     }
   }
 
-  void Game::checkLine() {
+  void Game::checkLine(std::vector<int> &anim) {
     for (int i = 0; i < _board_y; i += 1) {
       bool row = true;
       for (int j = 0; j < _board_x; j += 1) {
@@ -177,18 +177,16 @@ namespace Tetris {
       if (row) {
 	_score += 1;
 	for (int j = 0; j < _board_x; j += 1) {
-	  _gameBoard[i][j]->disapear();
-	  for (int k = i; k > 0; k -= 1) {
-	    Tetris::Cubi *tmp = _gameBoard[k][j];
-	    _gameBoard[k][j] = _gameBoard[k - 1][j];
-	    _gameBoard[k - 1][j] = tmp;
-	  }
+	  _gameBoard[i][j]->setState(false);
 	}
+	anim.push_back(i);
       }
     }
   }
   
   bool Game::update(std::vector<Tetris::Cubi *> &falling, bool &update) {
+    static std::vector<int> anim;
+    std::vector<int> n;
     bool canMove = true;
     for (int i = 0; i < _posNext.size(); i += 1) {
       if (_posNext[i][1] + 1 < _gameBoard.size()) {
@@ -199,6 +197,23 @@ namespace Tetris {
 	canMove = false;
       }
     }
+    for (int i = 0; i < anim.size(); i += 1) {
+      bool done = false;
+      for (int j = 0; j < _board_x; j += 1) {
+	if (_gameBoard[anim[i]][j]->animDone()) {
+	  done = true;
+	  for (int k = anim[i]; k > 0; k -= 1) {
+	    Tetris::Cubi *tmp = _gameBoard[k][j];
+	    _gameBoard[k][j] = _gameBoard[k - 1][j];
+	    _gameBoard[k - 1][j] = tmp;
+	  }
+	}
+      }
+      if (!done) {
+	n.push_back(anim[i]);
+      }
+    }
+    anim = n;
     if (canMove) {
       for (int i = 0; i < _posNext.size(); i += 1) {
 	_posNext[i][1] += 1;
@@ -206,7 +221,7 @@ namespace Tetris {
     } else {
       for (int i = 0; i < falling.size(); i += 1) {
 	_gameBoard[_posNext[i][1]][_posNext[i][0]] = falling[i];
-	this->checkLine();
+	this->checkLine(anim);
       }
       update = true;
       return this->getNext();

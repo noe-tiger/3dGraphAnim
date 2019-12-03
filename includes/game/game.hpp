@@ -32,7 +32,7 @@ namespace Tetris {
   private:
     bool getNext();
     bool canRotate(bool wise);
-    void checkLine();
+    void checkLine(std::vector<int> &anim);
 
     std::vector<std::vector<Tetris::Cubi *>> _gameBoard;
     std::vector<Tetris::Tetrimino> &_tetriminos;
