@@ -21,7 +21,7 @@ namespace Tetris {
     void print();
     void rotate(bool wise);
     void side(bool wise);
-    bool update(std::vector<Tetris::Cubi *> &falling);
+    bool update(std::vector<Tetris::Cubi *> &falling, bool &update);
 
     std::vector<int> getFormat();
     const std::vector<std::vector<Tetris::Cubi *>> &getBoard();

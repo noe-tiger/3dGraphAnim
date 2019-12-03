@@ -83,14 +83,22 @@ namespace Tetris {
     } else {
       tmp.rotateRight();
     }
+    int level = this->_board_y;
+    int side = this->_board_x;
+    for (int i = 0; i < _posNext.size(); i += 1) {
+      if (_posNext[i][1] < level)
+	level = _posNext[i][1];
+      if (_posNext[i][0] < side)
+	side = _posNext[i][0];
+    }
     std::vector<std::vector<int>> posNext;
     auto format = tmp.getFormat();
     for (int i = 0; i < format.size(); i += 1) {
       for (int j = 0; j < format[i].size(); j += 1) {
     	std::vector<int> new_position;
 	if (format[i][j] == 'x') {
-	  new_position.push_back(((_board_x / 2) - (format[i].size() / 2)) + j);
-	  new_position.push_back(i);
+	  new_position.push_back(j + side);
+	  new_position.push_back(i + level);
 	  posNext.push_back(new_position);
 	}
       }
@@ -111,6 +119,15 @@ namespace Tetris {
     if (!canRotate(wise)) {
       return ;
     }
+
+    int level = this->_board_y;
+    int side = this->_board_x;
+    for (int i = 0; i < _posNext.size(); i += 1) {
+      if (_posNext[i][1] < level)
+	level = _posNext[i][1];
+      if (_posNext[i][0] < side)
+	side = _posNext[i][0];
+    }
     if (wise) {
       _next.rotateLeft();
     } else {
@@ -122,8 +139,8 @@ namespace Tetris {
       for (int j = 0; j < format[i].size(); j += 1) {
     	std::vector<int> new_position;
 	if (format[i][j] == 'x') {
-	  new_position.push_back(((_board_x / 2) - (format[i].size() / 2)) + j);
-	  new_position.push_back(i);
+	  new_position.push_back(j + side);
+	  new_position.push_back(i + level);
 	  _posNext.push_back(new_position);
 	}
       }
@@ -147,7 +164,7 @@ namespace Tetris {
   }
 
   void Game::checkLine() {
-    for (int i = _board_y - 1; i > 0; i -=1) {
+    for (int i = 0; i < _board_y; i += 1) {
       bool row = true;
       for (int j = 0; j < _board_x; j += 1) {
 	if (!_gameBoard[i][j]->full()) {
@@ -156,19 +173,25 @@ namespace Tetris {
       }
       if (row) {
 	_score += 1;
+	std::cout << i << std::endl;
 	for (int j = 0; j < _board_x; j += 1) {
-	  _gameBoard[i][j]->disapear();
+	//   std::cout << i << " " << j << std::endl;
 	  for (int k = i; k > 0; k -= 1) {
+	    std::cout << k << std::endl;
 	    Tetris::Cubi *tmp = _gameBoard[k][j];
 	    _gameBoard[k][j] = _gameBoard[k - 1][j];
 	    _gameBoard[k - 1][j] = tmp;
 	  }
+	  std::cout << std::endl;
+	}
+	for (int j = 0; j < _board_x; j += 1) {
+	  _gameBoard[0][j]->disapear();
 	}
       }
     }
   }
   
-  bool Game::update(std::vector<Tetris::Cubi *> &falling) {
+  bool Game::update(std::vector<Tetris::Cubi *> &falling, bool &update) {
     bool canMove = true;
     for (int i = 0; i < _posNext.size(); i += 1) {
       if (_posNext[i][1] + 1 < _gameBoard.size()) {
@@ -188,6 +211,7 @@ namespace Tetris {
 	_gameBoard[_posNext[i][1]][_posNext[i][0]] = falling[i];
 	this->checkLine();
       }
+      update = true;
       return this->getNext();
     }
     return true;

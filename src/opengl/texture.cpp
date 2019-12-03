@@ -8,6 +8,7 @@
 namespace Tetris {
   Texture::Texture(const char *texturePath) {
     _texture = loadBMP(texturePath);
+    _name = texturePath;
   }
 
   Texture::~Texture() {

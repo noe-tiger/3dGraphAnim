@@ -78,6 +78,11 @@ namespace Tetris {
     } else {
       tmp.rotateRight();
     }
+    int level = this->_board_y;
+    for (int i = 0; i < _posNext.size(); i += 1) {
+      if (_posNext[i][1] < level)
+	level = _posNext[i][1];
+    }
     std::vector<std::vector<int>> posNext;
     auto format = tmp.getFormat();
     for (int i = 0; i < format.size(); i += 1) {
@@ -85,7 +90,7 @@ namespace Tetris {
     	std::vector<int> new_position;
 	if (format[i][j] == 'x') {
 	  new_position.push_back(((_board_x / 2) - (format[i].size() / 2)) + j);
-	  new_position.push_back(i);
+	  new_position.push_back(i + level);
 	  posNext.push_back(new_position);
 	}
       }
@@ -111,6 +116,11 @@ namespace Tetris {
     } else {
       _next.rotateRight();
     }
+    int level = this->_board_y;
+    for (int i = 0; i < _posNext.size(); i += 1) {
+      if (_posNext[i][1] < level)
+	level = _posNext[i][1];
+    }
     _posNext.clear();
     auto format = _next.getFormat();
     for (int i = 0; i < format.size(); i += 1) {
@@ -118,7 +128,7 @@ namespace Tetris {
     	std::vector<int> new_position;
 	if (format[i][j] == 'x') {
 	  new_position.push_back(((_board_x / 2) - (format[i].size() / 2)) + j);
-	  new_position.push_back(i);
+	  new_position.push_back(i + level);
 	  _posNext.push_back(new_position);
 	}
       }

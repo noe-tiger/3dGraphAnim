@@ -35,6 +35,8 @@ namespace Tetris {
   void Cubi::draw() {
     if (!_full)
       return ;
+    _texture.print();
+    // std::cout << GL_TEXTURE1;
     glm::mat4 ProjectionMatrix = getProjectionMatrix();
     glm::mat4 ViewMatrix = getViewMatrix();
     glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
@@ -75,8 +77,4 @@ namespace Tetris {
   void Cubi::disapear() {
     _full = false;
   }
-
-  // Tetris::Cubi &operator=(Tetris::Cubi &yes) {
-
-  // }
 }
