@@ -36,3 +36,7 @@ faire le jeu
 
  - faire un mouvement de camera rigodrole
  - gerer les inputs manette
+  - gerer les toogle - done
+  - gerer les drops rapide
+
+  - FIX CE PUTAIN DE BUG DE MERDE POUR LA ROTATION DE TETRIMINO
