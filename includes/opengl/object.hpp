@@ -26,7 +26,7 @@ namespace Tetris {
       this->_window = yes._window;
       this->_vertex = yes._vertex;
       this->_texture = yes._texture;
-      this->_full = yes._full;
+      // this->_full = yes._full;
       return *this;
     }
   private:

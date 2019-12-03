@@ -21,10 +21,10 @@ namespace Tetris {
     void print();
     void rotate(bool wise);
     void side(bool wise);
-    bool update();
+    bool update(std::vector<Tetris::Cubi *> &falling);
 
     std::vector<int> getFormat();
-    const std::vector<std::vector<Tetris::Cubi>> &getBoard();
+    const std::vector<std::vector<Tetris::Cubi *>> &getBoard();
     const Tetris::Tetrimino &getFalling();
     const std::vector<std::vector<int>> &getFallingPos();
     const size_t getScore();
@@ -33,7 +33,7 @@ namespace Tetris {
     bool canRotate(bool wise);
     void checkLine();
 
-    std::vector<std::vector<Tetris::Cubi>> _gameBoard;
+    std::vector<std::vector<Tetris::Cubi *>> _gameBoard;
     std::vector<Tetris::Tetrimino> &_tetriminos;
     Tetris::Tetrimino _next;
     std::vector<std::vector<int>> _posNext;

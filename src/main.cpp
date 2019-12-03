@@ -77,14 +77,14 @@ void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y, glm::vec3
   }
 }
 
-void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi> &falling) {
+void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi *> &falling) {
   int x = game.getFormat()[0];
   int y = game.getFormat()[1];
   glm::vec3 gOrientation(0.0, 0.0, 0.0);
   glm::vec3 gPosition(0.0, 0.0, -(x > y ? x : y) * 3);
   glm::vec3 gScale(1.0, 1.0, 1.0);
   glm::vec3 gLight(4, 4, -(x > y ? x : y) * 3 + 4);
-  std::vector<std::vector<Tetris::Cubi>> board = game.getBoard();
+  std::vector<std::vector<Tetris::Cubi *>> board = game.getBoard();
   for (int i = 0; i < board.size(); i += 1) {
     for (int j = 0; j < board[i].size(); j += 1) {
       gPosition.y = y - 1 - i * 2;
@@ -92,8 +92,8 @@ void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi> &falling) {
       gLight.y =  y - 1 - i * 2 + 4;
       gLight.x =  x - 2 - i * 2 + 4;
       // board[i][j].setState(true);
-      board[i][j].setupPosition(gOrientation, gPosition, gScale, gLight);
-      board[i][j].draw();
+      board[i][j]->setupPosition(gOrientation, gPosition, gScale, gLight);
+      board[i][j]->draw();
     }
   }
 
@@ -104,8 +104,8 @@ void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi> &falling) {
     gPosition.x = x - 2 - position[i][0] * 2;
     gLight.y = y - 1 - position[i][1] * 2 + 4;
     gLight.x = x - 1 - position[i][0] * 2 + 4;
-    falling[i].setupPosition(gOrientation, gPosition, gScale, gLight);
-    falling[i].draw();
+    falling[i]->setupPosition(gOrientation, gPosition, gScale, gLight);
+    falling[i]->draw();
   }
 }
 
@@ -118,7 +118,7 @@ int main()
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
   Tetris::Vertex objvertex2("../sources/sample.obj");
 
-  int y = 21;
+  int y = 10;
   int x = 10;
   std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino");
   Tetris::Game game(x, y, tet, window, objvertex1, texture1);
@@ -140,12 +140,11 @@ int main()
     boardEdge.push_back(object);
   }
 
-  std::vector<Tetris::Cubi> falling;
+  std::vector<Tetris::Cubi *> falling;
   Tetris::Tetrimino lel = game.getFalling();
   Tetris::Texture fallingTexture = lel.getTexture();
   for (int i = 0; i < game.getFallingPos().size(); i += 1) {
-    Tetris::Cubi object(window, objvertex2, fallingTexture);
-    falling.push_back(object);
+    falling.push_back(new Tetris::Cubi(window, objvertex2, fallingTexture));
   }
 
   double lastTime = glfwGetTime();
@@ -156,7 +155,7 @@ int main()
     lastTime = currentTime;
     timeout += deltaTime;
     if (timeout > 1) {
-      bool ret = game.update();
+      bool ret = game.update(falling);
       if (!ret)
 	break ;
       timeout = 0;
