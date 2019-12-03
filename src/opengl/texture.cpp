@@ -26,7 +26,7 @@ namespace Tetris {
     std::vector<Tetris::Texture *> tet;
 
     for(const auto& p: std::filesystem::recursive_directory_iterator(dirpath)) {
-      tet.push_back(new Tetris::Texture(p.path().c_str()));
+      tet.push_back(new Tetris::Texture(p.path().u8string().c_str()));
     }
     return tet;
   }

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <vector>
 #include <string>
 
 #include "object.hpp"
@@ -15,7 +16,7 @@ namespace Tetris {
 
     void rotateRight();
     void rotateLeft();
-    
+
     void print();
     std::vector<std::vector<char>> getFormat();
     Tetris::Tetrimino &operator=(Tetris::Tetrimino &in) {

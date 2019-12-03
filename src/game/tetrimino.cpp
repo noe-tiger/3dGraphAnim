@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 
 #include "tetrimino.hpp"
@@ -11,11 +12,12 @@ namespace Tetris {
     std::vector<char> tmp_vec;
 
     for (const auto &c : _str_format) {
-      if (c == '\n') {
-	_format.push_back(tmp_vec);
-	tmp_vec.clear();
+      if (c == 'n') {
+	       _format.push_back(tmp_vec);
+	       tmp_vec.clear();
       } else {
-	tmp_vec.push_back(c);
+        if (c == 'x' || c == ' ')
+	         tmp_vec.push_back(c);
       }
     }
     _format.push_back(tmp_vec);
@@ -30,13 +32,13 @@ namespace Tetris {
 
   Tetrimino::~Tetrimino() {
   }
-  
+
   void Tetrimino::rotateRight() {
     std::vector<std::vector<char>> new_format;
 
     for (int i = 0; i < _format[0].size(); i += 1) {
       std::vector<char> tmp_vec;
-      for (int j = _format.size() - 1; j >= 0; j -= 1) {
+      for (int j = (int)_format.size() - 1; j >= 0; j -= 1) {
 	tmp_vec.push_back(_format[j][i]);
       }
       new_format.push_back(tmp_vec);
@@ -49,7 +51,7 @@ namespace Tetris {
     this->rotateRight();
     this->rotateRight();
   }
-    
+
   void Tetrimino::print() {
     for (const auto &x: _format) {
       for (const auto &y: x) {
@@ -63,10 +65,6 @@ namespace Tetris {
     return _format;
   }
 
-  // Tetris::Texture &Tetrimino::getTexture() {
-  //   return _texture;
-  // }
-
   static std::string getTexturePath(std::string path) {
     std::stringstream ss(path);
     std::string token;
@@ -77,21 +75,21 @@ namespace Tetris {
       token.pop_back();
     return first + "/sources/" + token + ".bmp";
   }
-  
+
   std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath) {
     std::vector<Tetris::Tetrimino> tet;
 
     for(const auto& p: std::filesystem::recursive_directory_iterator(dirpath)) {
       std::ifstream is (p.path(), std::ifstream::binary);
       if (is) {
-	is.seekg (0, is.end);
-	int length = is.tellg();
-	is.seekg (0, is.beg);
-	char * buffer = new char [length];
-	is.read (buffer,length);
-	tet.push_back(Tetris::Tetrimino(buffer, getTexturePath(p.path()).c_str()));
-	is.close();
-	delete [] buffer;
+      	is.seekg (0, is.end);
+      	int length = (int)is.tellg();
+      	is.seekg (0, is.beg);
+      	char * buffer = new char [length];
+      	is.read (buffer,length);
+      	tet.push_back(Tetris::Tetrimino(buffer, getTexturePath(p.path().u8string()).c_str()));
+      	is.close();
+      	delete [] buffer;
       }
     }
     return tet;

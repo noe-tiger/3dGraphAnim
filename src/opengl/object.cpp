@@ -6,7 +6,7 @@
 #include "controls.hpp"
 #include "object.hpp"
 
-namespace Tetris {  
+namespace Tetris {
   Cubi::Cubi(Tetris::Window &window,
 	     Tetris::Vertex &vertex,
 	     Tetris::Texture &texture,
@@ -25,7 +25,7 @@ namespace Tetris {
   Cubi::~Cubi()
   {
   }
-  
+
   void Cubi::setupPosition(glm::vec3 &orientation,
 			   glm::vec3 &position,
 			   glm::vec3 &scale,
@@ -47,7 +47,7 @@ namespace Tetris {
     glm::mat4 TranslationMatrix = glm::translate(RotationMatrix, this->_position);
     glm::mat4 ModelMatrix = glm::scale(TranslationMatrix, this->_scale);
     glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
-    
+
     glUniformMatrix4fv(this->_window.getMatrixID(), 1, GL_FALSE, &MVP[0][0]);
     glUniformMatrix4fv(this->_window.getModelMatrixID(), 1, GL_FALSE, &ModelMatrix[0][0]);
     glUniformMatrix4fv(this->_window.getViewMatrixID(), 1, GL_FALSE, &ViewMatrix[0][0]);
@@ -84,9 +84,9 @@ namespace Tetris {
   void Cubi::disapear() {
     if (_scal > 0.0) {
       _scal -= 0.01;
-      _scale.x *= _scal;
-      _scale.y *= _scal;
-      _scale.z *= _scal;
+      _scale.x *= (double)_scal;
+      _scale.y *= (double)_scal;
+      _scale.z *= (double)_scal;
     } else {
       _full = false;
       _scal = 0.0;

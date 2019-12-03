@@ -14,7 +14,7 @@ namespace Tetris {
     _vertex(vertex),
     _texture(texture),
     _next(_tetriminos[0]){
-    std::srand(std::time(nullptr));
+    std::srand((int)std::time(nullptr));
     for (int i = 0; i < board_y; i += 1) {
       std::vector<Tetris::Cubi *> tmp_arr;
       for (int j = 0; j < board_x; j += 1) {
@@ -61,7 +61,7 @@ namespace Tetris {
       for (int j = 0; j < format[i].size(); j += 1) {
     	std::vector<int> new_position;
 	if (format[i][j] == 'x') {
-	  new_position.push_back(((_board_x / 2) - (format[i].size() / 2)) + j);
+	  new_position.push_back(((_board_x / 2) - (static_cast<int>(format[i].size()) / 2)) + j);
 	  new_position.push_back(i);
 	  _posNext.push_back(new_position);
 	}
@@ -117,7 +117,7 @@ namespace Tetris {
     }
     return true;
   }
-  
+
   void Game::rotate(bool wise) {
     if (!canRotate(wise)) {
       return ;
@@ -183,19 +183,19 @@ namespace Tetris {
       }
     }
   }
-  
+
   bool Game::update(std::vector<Tetris::Cubi *> &falling, bool &update) {
     static std::vector<int> anim;
     std::vector<int> n;
     bool canMove = true;
     for (int i = 0; i < _posNext.size(); i += 1) {
       if (_posNext[i][1] + 1 < _gameBoard.size()) {
-	if (_gameBoard[_posNext[i][1] + 1][_posNext[i][0]]->full()) {
-	  canMove = false;
-	}
-      } else {
-	canMove = false;
-      }
+	      if (_gameBoard[_posNext[i][1] + 1][_posNext[i][0]]->full()) {
+	         canMove = false;
+	        }
+        } else {
+	         canMove = false;
+       }
     }
     for (int i = 0; i < anim.size(); i += 1) {
       bool done = false;

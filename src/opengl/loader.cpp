@@ -6,14 +6,13 @@
 #include <sstream>
 #include <fstream>
 
-
 bool loadOBJ(
-	     const char * path, 
-	     std::vector<glm::vec3> & out_vertices, 
+	     const char * path,
+	     std::vector<glm::vec3> & out_vertices,
 	     std::vector<glm::vec2> & out_uvs,
 	     std::vector<glm::vec3> & out_normals) {
   std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-  std::vector<glm::vec3> temp_vertices; 
+  std::vector<glm::vec3> temp_vertices;
   std::vector<glm::vec2> temp_uvs;
   std::vector<glm::vec3> temp_normals;
 
@@ -65,7 +64,7 @@ bool loadOBJ(
     } else {
       char stupidBuffer[1000];
       fgets(stupidBuffer, 1000, file);
-    }  
+    }
   }
   for(unsigned int i=0; i<vertexIndices.size(); i++){
     unsigned int vertexIndex = vertexIndices[i];
@@ -141,7 +140,7 @@ GLuint LoadShaders(const char * vertex_file_path,const char * fragment_file_path
     std::cerr << &ProgramErrorMessage[0] << std::endl;
   }
   glDetachShader(ProgramID, VertexShaderID);
-  glDetachShader(ProgramID, FragmentShaderID);	
+  glDetachShader(ProgramID, FragmentShaderID);
   glDeleteShader(VertexShaderID);
   glDeleteShader(FragmentShaderID);
   return ProgramID;
@@ -160,7 +159,7 @@ GLuint loadBMP(const char * imagepath){
       std::cerr << "file not found ! " << imagepath << std::endl;
       return 0;
     }
-    if (fread(header, 1, 54, file) != 54) { 
+    if (fread(header, 1, 54, file) != 54) {
       std::cerr << "wrong bmf format ! " << imagepath << std::endl;
       fclose(file);
       return 0;

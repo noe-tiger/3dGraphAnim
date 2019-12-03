@@ -13,7 +13,7 @@ namespace Tetris {
     void update();
 
     bool close();
-    
+
     GLFWwindow *getWindow();
     GLuint getVertexArrayID();
     GLuint getProgramID();

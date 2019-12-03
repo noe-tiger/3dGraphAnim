@@ -37,7 +37,7 @@ namespace Tetris {
     glfwSetCursorPos(this->_window, 1024/2, 768/2);
     glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS); 
+    glDepthFunc(GL_LESS);
     glEnable(GL_CULL_FACE);
     glGenVertexArrays(1, &this->_vertexArrayID);
     glBindVertexArray(this->_vertexArrayID);
@@ -60,7 +60,7 @@ namespace Tetris {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(this->_programID);
   }
-  
+
   void Window::update() {
     glfwSwapBuffers(this->_window);
     glfwPollEvents();
@@ -70,7 +70,7 @@ namespace Tetris {
     return !(glfwGetKey(this->_window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
 	    glfwWindowShouldClose(this->_window) == 0);
   }
-  
+
   GLFWwindow *Window::getWindow() {
     return this->_window;
   }

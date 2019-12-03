@@ -14,7 +14,7 @@ glm::mat4 getProjectionMatrix(){
 	return ProjectionMatrix;
 }
 
-glm::vec3 position = glm::vec3( 0, 0, 5 ); 
+glm::vec3 position = glm::vec3( 0, 0, 5 );
 float horizontalAngle = 3.14f;
 float verticalAngle = 0.0f;
 float initialFoV = 45.0f;
@@ -65,7 +65,7 @@ void controller(Tetris::Game &game, std::vector<Tetris::Cubi *> falling, bool &u
     if (axes[5] > 0){
       position -= height * speedController;
     }
- 
+
     if (buttons[1] == 1 || buttons[3] == 1) {
       if (turnToog < glfwGetTime() - 0.3) {
 	game.rotate(false);
@@ -95,7 +95,7 @@ void inputs(GLFWwindow *window, Tetris::Game &game,
   controller(game, falling, update);
   glfwGetCursorPos(window, &xpos, &ypos);
   glfwSetCursorPos(window, 1024/2, 768/2);
-	
+
   horizontalAngle += mouseSpeed * float(1024/2 - xpos );
   verticalAngle   += mouseSpeed * float( 768/2 - ypos );
 

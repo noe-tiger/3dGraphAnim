@@ -18,7 +18,7 @@ void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y) {
   for (int i = 0; i < boardEdge.size(); i += 1) {
     glm::vec3 position(0, 0, -(x > y ? x : y) * 3);
     glm::vec3 light(4, 4, -(x > y ? x : y) * 3 + 4);
-    
+
     if (i < y * 2) {
       position.y = y - (i % 2 ? i : i + 1);
       light.y = y - (i % 2 ? i : i + 1) + 4;
@@ -63,7 +63,7 @@ void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi *> &falling) {
     light.x = -x + position[i][0] * 2 + 4;
     falling[i]->setupPosition(orientation, pos, scale, light);
     falling[i]->draw();
-  }
+}
 }
 
 int main()
@@ -122,15 +122,15 @@ int main()
     showBoard(game, falling);
 
     // change the falling object
-    if (update) {
-      falling.clear();
-      for (int i = 0; i < game.getFallingPos().size(); i += 1) {
-	falling.push_back(new Tetris::Cubi(window, boardVertex, *textures[game.getTetID()]));
-      }
-    }
-    
+  //   if (update) {
+  //     falling.clear();
+  //     for (int i = 0; i < game.getFallingPos().size(); i += 1) {
+	// falling.push_back(new Tetris::Cubi(window, boardVertex, *textures[game.getTetID()]));
+  //     }
+  //   }
+
     window.update();
   } while(!window.close());
-  
+
   return 0;
 }
