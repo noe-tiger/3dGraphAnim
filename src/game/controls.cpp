@@ -34,15 +34,6 @@ void controller(Tetris::Game &game, std::vector<Tetris::Cubi *> falling, bool &u
     const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
     int buttonsCount;
     const unsigned char * buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonsCount);
-    for (int i = 0; i < axesCount; i += 1) {
-      std::cout << axes[i] << " ";
-    }
-    std::cout << " -- ";
-    for (int i = 0; i < buttonsCount; i += 1) {
-      std::cout << int(buttons[i]) << " ";
-    }
-    std::cout << std::endl;
-
     horizontalAngle -= mouseSpeed * float(axes[3]);
     verticalAngle   -= mouseSpeed * float(axes[4]);
     glm::vec3 prof(cos(verticalAngle) * sin(horizontalAngle),
