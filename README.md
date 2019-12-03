@@ -32,11 +32,8 @@ faire le jeu
  - gerer l'arret d une piece - done
  - gerer la destruction de ligne - done
  - gerer la fin de jeu - done
-   - gerer l'augmentation de difficulte
+   - gerer l'augmentation de difficulte - done
 
- - faire un mouvement de camera rigodrole
  - gerer les inputs manette
   - gerer les toogle - done
-  - gerer les drops rapide
-
-  - FIX CE PUTAIN DE BUG DE MERDE POUR LA ROTATION DE TETRIMINO
+  - gerer les drops rapide - done

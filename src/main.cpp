@@ -158,7 +158,7 @@ int main()
     bool update = false;
     lastTime = currentTime;
     timeout += deltaTime;
-    if (timeout > 1) {
+    if (timeout > (1 - 0.01 * game.getScore())) {
       bool ret = game.update(falling, update);
       if (!ret)
       	break ;
