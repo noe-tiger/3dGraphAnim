@@ -72,11 +72,9 @@ int main()
   Tetris::Window window("../vertex.glsm", "../shader.glsm");
 
   Tetris::Texture texture1("../sources/my_texture.bmp");
-  Tetris::Texture texture2("../sources/bar.bmp");
   
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
   Tetris::Vertex objvertex2("../sources/suzanne.obj");
-  // Tetris::Vertex objvertex2("../sources/sample.obj");
 
   int y = 21;
   int x = 10;
@@ -108,9 +106,10 @@ int main()
       	break ;
       timeout = 0;
     }
+
     window.clearScreen();
-    computeMatricesFromInputs(window.getWindow()); // METTRE A LA NORME
-    controller(game, falling, update);
+    computeMatricesFromInputs(window.getWindow(), game, falling, update);
+
     showBoardEdge(boardEdge, x, y);
     showBoard(game, falling);
     if (update) {
