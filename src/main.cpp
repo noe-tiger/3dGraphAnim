@@ -122,12 +122,12 @@ int main()
     showBoard(game, falling);
 
     // change the falling object
-  //   if (update) {
-  //     falling.clear();
-  //     for (int i = 0; i < game.getFallingPos().size(); i += 1) {
-	// falling.push_back(new Tetris::Cubi(window, boardVertex, *textures[game.getTetID()]));
-  //     }
-  //   }
+    if (update) {
+      falling.clear();
+      for (int i = 0; i < game.getFallingPos().size(); i += 1) {
+	falling.push_back(new Tetris::Cubi(window, boardVertex, *textures[game.getTetID()]));
+      }
+    }
 
     window.update();
   } while(!window.close());
