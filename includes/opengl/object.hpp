@@ -11,7 +11,7 @@ namespace Tetris {
     Cubi(Tetris::Window &window,
 	 Tetris::Vertex &vertex,
 	 Tetris::Texture &texture,
-	 bool full=true);
+	 bool full = true);
     ~Cubi();
 
     void setupPosition(glm::vec3 &orientation,
@@ -22,8 +22,8 @@ namespace Tetris {
     bool full();
     void setState(bool state);
     void disapear();
-    Tetris::Cubi &operator=(Tetris::Cubi &yes) {
-      this->_window = yes._window; // ajouter tous les autres !!
+    Tetris::Cubi &operator=(const Tetris::Cubi &yes) {
+      this->_window = yes._window;
       this->_vertex = yes._vertex;
       this->_texture = yes._texture;
       this->_full = yes._full;

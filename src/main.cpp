@@ -17,25 +17,25 @@ void controller(glm::vec3 *gOrientation, Tetris::Game &game) {
     int axesCount;
     const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
     
-    gOrientation->y += axes[0]/ 20.0f;
-    gOrientation->x += axes[1]/ 20.0f;
+    // gOrientation->y += axes[0]/ 20.0f;
+    // gOrientation->x += axes[1]/ 20.0f;
 
     if (axes[6] != 0) {
-      game.side((axes[6] > 0 ? true : false));
+      game.side((axes[6] < 0 ? true : false));
     }
     
-      for (int i = 0; i < axesCount; i += 1) {
-      	std::cout << axes[i] << " ";
-      }
-      std::cout << std::endl;
-      std::cout << " == ";
+      // for (int i = 0; i < axesCount; i += 1) {
+      // 	std::cout << axes[i] << " ";
+      // }
+      // std::cout << std::endl;
+      // std::cout << " == ";
 
       int buttonsCount;
       const unsigned char * buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonsCount);
-      for (int i = 0; i < buttonsCount; i += 1) {
-    	std::cout << int(buttons[i]) << " ";
-      }
-      std::cout << std::endl;
+      // for (int i = 0; i < buttonsCount; i += 1) {
+      // 	std::cout << int(buttons[i]) << " ";
+      // }
+      // std::cout << std::endl;
 
       if (buttons[1] == 1)
 	game.rotate(false);
@@ -77,7 +77,7 @@ void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y, glm::vec3
   }
 }
 
-void showBoard(Tetris::Game &game) {
+void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi> &falling) {
   int x = game.getFormat()[0];
   int y = game.getFormat()[1];
   glm::vec3 gOrientation(0.0, 0.0, 0.0);
@@ -87,24 +87,25 @@ void showBoard(Tetris::Game &game) {
   std::vector<std::vector<Tetris::Cubi>> board = game.getBoard();
   for (int i = 0; i < board.size(); i += 1) {
     for (int j = 0; j < board[i].size(); j += 1) {
-      gPosition.y = -y + 1 + i * 2;
-      gPosition.x = -x + j * 2;
-      gLight.y = -y + 1 + i * 2 + 4;
-      gLight.x = -x + j * 2 + 4;
+      gPosition.y = y - 1 - i * 2;
+      gPosition.x = x - 2 - j * 2;
+      gLight.y =  y - 1 - i * 2 + 4;
+      gLight.x =  x - 2 - i * 2 + 4;
+      // board[i][j].setState(true);
       board[i][j].setupPosition(gOrientation, gPosition, gScale, gLight);
       board[i][j].draw();
     }
   }
 
-  Tetris::Tetrimino falling = game.getFalling();
-  std::vector<Tetris::Cubi> block = falling.getBlock();
+  // gPosition.z += 2;
   std::vector<std::vector<int>> position = game.getFallingPos();
-
-  for (int i = 0; i < block.size() && i < position.size(); i += 1) {
-    gPosition.y = -position[i][0];
-    gPosition.x = -position[i][1];
-    block[i].setupPosition(gOrientation, gPosition, gScale, gLight);
-    block[i].draw();
+  for (int i = 0; i < falling.size() && i < position.size(); i += 1) {
+    gPosition.y = y - 1 - position[i][1] * 2;
+    gPosition.x = x - 2 - position[i][0] * 2;
+    gLight.y = y - 1 - position[i][1] * 2 + 4;
+    gLight.x = x - 1 - position[i][0] * 2 + 4;
+    falling[i].setupPosition(gOrientation, gPosition, gScale, gLight);
+    falling[i].draw();
   }
 }
 
@@ -115,16 +116,22 @@ int main()
   Tetris::Texture texture1("../sources/my_texture.bmp");
   
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
+  Tetris::Vertex objvertex2("../sources/sample.obj");
 
   int y = 21;
   int x = 10;
-  std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino", window, "../sources/sample.obj");
+  std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino");
   Tetris::Game game(x, y, tet, window, objvertex1, texture1);
 
+  // for (int i = 0; i < tet.size(); i += 1) {
+  //   tet[i].print();
+  //   std::cout << std::endl;
+  // }
+
   glm::vec3 gOrientation(0.0, 0.0, 0.0);
-  glm::vec3 gPosition(-1.0, -1.0, -1.0);
-  glm::vec3 gScale(1.0, 1.0, 1.0);
-  glm::vec3 gLight(4, 4, -(x > y ? x : y) * 3 + 4);
+  // glm::vec3 gPosition(-1.0, -1.0, -1.0);
+  // glm::vec3 gScale(1.0, 1.0, 1.0);
+  // glm::vec3 gLight(4, 4, -(x > y ? x : y) * 3 + 4);
 
   std::vector<Tetris::Cubi> boardEdge;
 
@@ -132,25 +139,38 @@ int main()
     Tetris::Cubi object(window, objvertex1, texture1);
     boardEdge.push_back(object);
   }
-  
+
+  std::vector<Tetris::Cubi> falling;
+  Tetris::Tetrimino lel = game.getFalling();
+  Tetris::Texture fallingTexture = lel.getTexture();
+  for (int i = 0; i < game.getFallingPos().size(); i += 1) {
+    Tetris::Cubi object(window, objvertex2, fallingTexture);
+    falling.push_back(object);
+  }
+
   double lastTime = glfwGetTime();
+  double timeout = 0.0f;
   do{
     double currentTime = glfwGetTime();
     float deltaTime = (float)(currentTime - lastTime);
     lastTime = currentTime;
+    timeout += deltaTime;
+    if (timeout > 1) {
+      bool ret = game.update();
+      if (!ret)
+	break ;
+      timeout = 0;
+    }
 
     window.clearScreen();
     computeMatricesFromInputs(window.getWindow());
 
     controller(&gOrientation, game);
     showBoardEdge(boardEdge, x, y, gOrientation);
-    showBoard(game);
-    // object1.setupPosition(gOrientation, gPosition, gScale, gLight);
-    // object1.draw();
+    showBoard(game, falling);
 
     window.update();
-  }
-  while(!window.close());
+  } while(!window.close());
   
   return 0;
 }

@@ -9,9 +9,7 @@ namespace Tetris {
   class Tetrimino {
   public:
     Tetrimino(const char *format,
-	      const char *texture,
-	      const char *vertex,
-	      Tetris::Window &window);
+	      const char *texture);
 
     ~Tetrimino();
 
@@ -20,17 +18,18 @@ namespace Tetris {
     
     void print();
     std::vector<std::vector<char>> getFormat();
-    std::vector<Tetris::Cubi> &getBlock();
-
+    Tetris::Texture &getTexture();
     Tetris::Tetrimino &operator=(Tetris::Tetrimino &in) {
-      return in;
+      this->_format = in._format;
+      this->_str_format = in._str_format;
+      this->_texture = in._texture;
+      return *this;
     }
   private:
-    std::vector<Tetris::Cubi> _block;
     std::vector<std::vector<char>> _format;
     std::string _str_format;
-    Tetris::Window &_window;
+    Tetris::Texture _texture;
   };
 
-  std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath, Tetris::Window &window, const char *objpath);
+  std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath);
 }
