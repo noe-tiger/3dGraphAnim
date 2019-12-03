@@ -13,6 +13,8 @@
 #include "game.hpp"
 
 void controller(glm::vec3 *gOrientation, Tetris::Game &game) {
+  static double sideToog = 0.0f;
+  static double turnToog = 0.0f;
   if (glfwJoystickPresent( GLFW_JOYSTICK_1 )) { // get controller input
     int axesCount;
     const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
@@ -21,7 +23,12 @@ void controller(glm::vec3 *gOrientation, Tetris::Game &game) {
     // gOrientation->x += axes[1]/ 20.0f;
 
     if (axes[6] != 0) {
-      game.side((axes[6] < 0 ? true : false));
+      if (sideToog < glfwGetTime() - 0.1) {
+	game.side((axes[6] < 0 ? true : false));
+	sideToog = glfwGetTime();
+      }
+    } else {
+      sideToog = 0.0f;
     }
     
       // for (int i = 0; i < axesCount; i += 1) {
@@ -37,11 +44,20 @@ void controller(glm::vec3 *gOrientation, Tetris::Game &game) {
       // }
       // std::cout << std::endl;
 
-      if (buttons[1] == 1)
-	game.rotate(false);
-      else if (buttons[0] == 1)
-	game.rotate(true);
-    }
+      if (buttons[1] == 1) {
+	if (turnToog < glfwGetTime() - 0.3) {
+	  game.rotate(true);
+	  turnToog = glfwGetTime();
+	}
+      } else if (buttons[0] == 1) {
+	if (turnToog < glfwGetTime() - 0.3) {
+	  game.rotate(false);
+	  turnToog = glfwGetTime();
+	}
+      } else {
+	turnToog = 0.0f;
+      }
+  }
 
 
 		// gOrientation.y += 0.000031415/ 2.0f * deltaTime;
