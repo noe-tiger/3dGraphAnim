@@ -79,10 +79,10 @@ void controller(Tetris::Game &game, std::vector<Tetris::Cubi *> falling, bool &u
     } else {
       turnToog = 0.0f;
     }
-  } // add up & down
+  }
 }
 
-void computeMatricesFromInputs(GLFWwindow *window, Tetris::Game &game,
+void inputs(GLFWwindow *window, Tetris::Game &game,
 			       std::vector<Tetris::Cubi *> falling, bool &update){
   static double lastTime = glfwGetTime();
   static double sideToog = 0.0f;

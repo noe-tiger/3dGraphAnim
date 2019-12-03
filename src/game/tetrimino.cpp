@@ -6,9 +6,7 @@
 #include "tetrimino.hpp"
 
 namespace Tetris {
-  Tetrimino::Tetrimino(const char *format, const char *texture)//  :
-    // _texture(Tetris::Texture(texture))
-  {
+  Tetrimino::Tetrimino(const char *format, const char *texture) {
     _str_format = format;
     std::vector<char> tmp_vec;
 
