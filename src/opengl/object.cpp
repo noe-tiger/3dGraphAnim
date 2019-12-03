@@ -16,6 +16,7 @@ namespace Tetris {
     _texture(texture)
   {
     _full = full;
+    _scal = 1.0;
   }
 
   Cubi::~Cubi()
@@ -35,8 +36,6 @@ namespace Tetris {
   void Cubi::draw() {
     if (!_full)
       return ;
-    _texture.print();
-    // std::cout << GL_TEXTURE1;
     glm::mat4 ProjectionMatrix = getProjectionMatrix();
     glm::mat4 ViewMatrix = getViewMatrix();
     glm::mat4 RotationMatrix = glm::eulerAngleYXZ(this->_orientation.y, this->_orientation.x, this->_orientation.z);
@@ -71,10 +70,14 @@ namespace Tetris {
   }
 
   void Cubi::setState(bool state) {
+    if (state == true) {
+      _scal = 1.0;
+    }
     _full = state;
   }
 
   void Cubi::disapear() {
+    
     _full = false;
   }
 }

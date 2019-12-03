@@ -51,7 +51,10 @@ namespace Tetris {
   }
 
   bool Game::getNext() {
-    _next = _tetriminos[std::rand() % _tetriminos.size()];
+    int new_id;
+    while ((new_id = std::rand() % _tetriminos.size()) == _id);
+    _id = new_id;
+    _next = _tetriminos[_id];
     _posNext.clear();
     auto format = _next.getFormat();
     for (int i = 0; i < format.size(); i += 1) {
@@ -150,7 +153,7 @@ namespace Tetris {
   void Game::side(bool wise) {
     int move = (wise ? 1 : -1);
     for (int i = 0; i < _posNext.size(); i += 1) {
-      if (_posNext[i][0] + move < _gameBoard.size()) {
+      if (_posNext[i][0] + move < _board_x && _posNext[i][0] + move >= 0) {
 	if (_gameBoard[_posNext[i][1]][_posNext[i][0] + move]->full()) {
 	  return ;
 	}
@@ -173,19 +176,13 @@ namespace Tetris {
       }
       if (row) {
 	_score += 1;
-	std::cout << i << std::endl;
 	for (int j = 0; j < _board_x; j += 1) {
-	//   std::cout << i << " " << j << std::endl;
+	  _gameBoard[i][j]->disapear();
 	  for (int k = i; k > 0; k -= 1) {
-	    std::cout << k << std::endl;
 	    Tetris::Cubi *tmp = _gameBoard[k][j];
 	    _gameBoard[k][j] = _gameBoard[k - 1][j];
 	    _gameBoard[k - 1][j] = tmp;
 	  }
-	  std::cout << std::endl;
-	}
-	for (int j = 0; j < _board_x; j += 1) {
-	  _gameBoard[0][j]->disapear();
 	}
       }
     }
@@ -238,5 +235,9 @@ namespace Tetris {
 
   const size_t Game::getScore() {
     return _score;
+  }
+
+  const size_t Game::getTetID() {
+    return _id;
   }
 }

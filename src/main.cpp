@@ -22,7 +22,6 @@ void controller(glm::vec3 *gOrientation, Tetris::Game &game, std::vector<Tetris:
     
     // gOrientation->y += axes[0]/ 20.0f;
     // gOrientation->x += axes[1]/ 20.0f;
-
     if (axes[6] != 0) {
       if (sideToog < glfwGetTime() - 0.1) {
 	game.side((axes[6] < 0 ? false : true));
@@ -67,17 +66,6 @@ void controller(glm::vec3 *gOrientation, Tetris::Game &game, std::vector<Tetris:
 	turnToog = 0.0f;
       }
   }
-
-
-		// gOrientation.y += 0.000031415/ 2.0f * deltaTime;
-    // gOrientation.x += 0.000031415/ 2.0f * deltaTime;
-    // gOrientation.z += 0.000031415/ 2.0f * deltaTime;
-    // gPosition.x += 0.001 * deltaTime;
-    // gPosition.y += 0.001 * deltaTime;
-    // gPosition.z += 0.001 * deltaTime;
-    // gScale.x -= 0.1 * deltaTime;
-    // gScale.y -= 0.1 * deltaTime;
-    // gScale.z -= 0.1 * deltaTime;
 }
 
 void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y, glm::vec3 &gOrientation) {
@@ -122,7 +110,7 @@ void showBoard(Tetris::Game &game, std::vector<Tetris::Cubi *> &falling) {
     }
   }
 
-  // gPosition.z += 2;
+  gPosition.z += 1;
   std::vector<std::vector<int>> position = game.getFallingPos();
   for (int i = 0; i < falling.size() && i < position.size(); i += 1) {
     gPosition.y = y - 1 - position[i][1] * 2;
@@ -139,38 +127,27 @@ int main()
   Tetris::Window window("../vertex.glsm", "../shader.glsm");
 
   Tetris::Texture texture1("../sources/my_texture.bmp");
+  Tetris::Texture texture2("../sources/bar.bmp");
   
   Tetris::Vertex objvertex1("../sources/suzanne.obj");
   Tetris::Vertex objvertex2("../sources/suzanne.obj");
   // Tetris::Vertex objvertex2("../sources/sample.obj");
 
-  int y = 10;
+  int y = 21;
   int x = 10;
   std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino");
+  std::vector<Tetris::Texture *> textures = Tetris::getTextures("../sources/tetrimino");
   Tetris::Game game(x, y, tet, window, objvertex1, texture1);
-
-  // for (int i = 0; i < tet.size(); i += 1) {
-  //   tet[i].print();
-  //   std::cout << std::endl;
-  // }
-
   glm::vec3 gOrientation(0.0, 0.0, 0.0);
-  // glm::vec3 gPosition(-1.0, -1.0, -1.0);
-  // glm::vec3 gScale(1.0, 1.0, 1.0);
-  // glm::vec3 gLight(4, 4, -(x > y ? x : y) * 3 + 4);
-
   std::vector<Tetris::Cubi> boardEdge;
-
   for (int i = 0; i < (x + 2 + (2 * y)); i += 1) {
     Tetris::Cubi object(window, objvertex1, texture1);
     boardEdge.push_back(object);
   }
 
   std::vector<Tetris::Cubi *> falling;
-  Tetris::Tetrimino fallingTet = game.getFalling();
-  Tetris::Texture fallingTexture = fallingTet.getTexture();
   for (int i = 0; i < game.getFallingPos().size(); i += 1) {
-    falling.push_back(new Tetris::Cubi(window, objvertex2, fallingTexture));
+    falling.push_back(new Tetris::Cubi(window, objvertex2, *textures[game.getTetID()]));
   }
 
   double lastTime = glfwGetTime();
@@ -187,23 +164,17 @@ int main()
       	break ;
       timeout = 0;
     }
-
     window.clearScreen();
-    computeMatricesFromInputs(window.getWindow());
-
+    computeMatricesFromInputs(window.getWindow()); // METTRE A LA NORME
     controller(&gOrientation, game, falling, update);
     showBoardEdge(boardEdge, x, y, gOrientation);
     showBoard(game, falling);
-
     if (update) {
       falling.clear();
-      Tetris::Tetrimino fallingTet = game.getFalling();
-      Tetris::Texture fallingTexture = fallingTet.getTexture();
       for (int i = 0; i < game.getFallingPos().size(); i += 1) {
-	falling.push_back(new Tetris::Cubi(window, objvertex2, fallingTexture));
+	falling.push_back(new Tetris::Cubi(window, objvertex2, *textures[game.getTetID()]));
       }
     }
-    
     window.update();
   } while(!window.close());
   

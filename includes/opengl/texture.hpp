@@ -2,6 +2,7 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
 
 #include <GLFW/glfw3.h>
 
@@ -20,4 +21,6 @@ namespace Tetris {
     GLuint _texture;
     std::string _name;
   };
+
+  std::vector<Tetris::Texture *> getTextures(std::string dirpath);
 }

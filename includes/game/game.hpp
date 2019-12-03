@@ -28,6 +28,7 @@ namespace Tetris {
     const Tetris::Tetrimino &getFalling();
     const std::vector<std::vector<int>> &getFallingPos();
     const size_t getScore();
+    const size_t getTetID();
   private:
     bool getNext();
     bool canRotate(bool wise);
@@ -39,6 +40,7 @@ namespace Tetris {
     std::vector<std::vector<int>> _posNext;
     int _board_x, _board_y;
     size_t _score;
+    size_t _id;
 
     Tetris::Window &_window;
     Tetris::Vertex &_vertex;

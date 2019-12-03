@@ -6,8 +6,9 @@
 #include "tetrimino.hpp"
 
 namespace Tetris {
-  Tetrimino::Tetrimino(const char *format, const char *texture) :
-    _texture(Tetris::Texture(texture)) {
+  Tetrimino::Tetrimino(const char *format, const char *texture)//  :
+    // _texture(Tetris::Texture(texture))
+  {
     _str_format = format;
     std::vector<char> tmp_vec;
 
@@ -64,9 +65,9 @@ namespace Tetris {
     return _format;
   }
 
-  Tetris::Texture &Tetrimino::getTexture() {
-    return _texture;
-  }
+  // Tetris::Texture &Tetrimino::getTexture() {
+  //   return _texture;
+  // }
 
   static std::string getTexturePath(std::string path) {
     std::stringstream ss(path);

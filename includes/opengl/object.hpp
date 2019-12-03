@@ -41,6 +41,7 @@ namespace Tetris {
     Tetris::Texture &_texture;
 
     bool _full;
+    double _scal;
   };
 
 }
