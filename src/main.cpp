@@ -12,64 +12,9 @@
 
 #include "game.hpp"
 
-void controller(glm::vec3 *gOrientation, Tetris::Game &game, std::vector<Tetris::Cubi *> falling, bool &update) {
-  static double sideToog = 0.0f;
-  static double dropToog = 0.0f;
-  static double turnToog = 0.0f;
-  if (glfwJoystickPresent( GLFW_JOYSTICK_1 )) { // get controller input
-    int axesCount;
-    const float * axes = glfwGetJoystickAxes(GLFW_JOYSTICK_1, &axesCount);
-    
-    // gOrientation->y += axes[0]/ 20.0f;
-    // gOrientation->x += axes[1]/ 20.0f;
-    if (axes[6] != 0) {
-      if (sideToog < glfwGetTime() - 0.1) {
-	game.side((axes[6] < 0 ? false : true));
-	sideToog = glfwGetTime();
-      }
-    } else {
-      sideToog = 0.0f;
-    }
-
-    if (axes[7] > 0) {
-      if (dropToog < glfwGetTime() - 0.1) {
-	game.update(falling, update);
-	dropToog = glfwGetTime();
-      }
-    } else {
-      dropToog = 0.0f;
-    }
-    
-      // for (int i = 0; i < axesCount; i += 1) {
-      // 	std::cout << axes[i] << " ";
-      // }
-      // std::cout << std::endl;
-
-      int buttonsCount;
-      const unsigned char * buttons = glfwGetJoystickButtons(GLFW_JOYSTICK_1, &buttonsCount);
-      // for (int i = 0; i < buttonsCount; i += 1) {
-      // 	std::cout << int(buttons[i]) << " ";
-      // }
-      // std::cout << std::endl;
-
-      if (buttons[1] == 1) {
-	if (turnToog < glfwGetTime() - 0.3) {
-	  game.rotate(false);
-	  turnToog = glfwGetTime();
-	}
-      } else if (buttons[0] == 1) {
-	if (turnToog < glfwGetTime() - 0.3) {
-	  game.rotate(true);
-	  turnToog = glfwGetTime();
-	}
-      } else {
-	turnToog = 0.0f;
-      }
-  }
-}
-
-void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y, glm::vec3 &gOrientation) {
+void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y) {
   glm::vec3 gScale(1.0, 1.0, 1.0);
+  glm::vec3 gOrientation(0.0, 0.0, 0.0);
   for (int i = 0; i < boardEdge.size(); i += 1) {
     glm::vec3 gPosition(0, 0, -(x > y ? x : y) * 3);
     glm::vec3 gLight(4, 4, -(x > y ? x : y) * 3 + 4);
@@ -138,7 +83,6 @@ int main()
   std::vector<Tetris::Tetrimino> tet = Tetris::getTetrimino("../tetrimino");
   std::vector<Tetris::Texture *> textures = Tetris::getTextures("../sources/tetrimino");
   Tetris::Game game(x, y, tet, window, objvertex1, texture1);
-  glm::vec3 gOrientation(0.0, 0.0, 0.0);
   std::vector<Tetris::Cubi> boardEdge;
   for (int i = 0; i < (x + 2 + (2 * y)); i += 1) {
     Tetris::Cubi object(window, objvertex1, texture1);
@@ -166,8 +110,8 @@ int main()
     }
     window.clearScreen();
     computeMatricesFromInputs(window.getWindow()); // METTRE A LA NORME
-    controller(&gOrientation, game, falling, update);
-    showBoardEdge(boardEdge, x, y, gOrientation);
+    controller(game, falling, update);
+    showBoardEdge(boardEdge, x, y);
     showBoard(game, falling);
     if (update) {
       falling.clear();
