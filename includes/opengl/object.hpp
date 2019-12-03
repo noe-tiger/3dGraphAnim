@@ -8,10 +8,10 @@
 namespace Tetris {
   class Cubi {
   public:
-    Cubi();
     Cubi(Tetris::Window &window,
 	 Tetris::Vertex &vertex,
-	 Tetris::Texture &texture);
+	 Tetris::Texture &texture,
+	 bool full=true);
     ~Cubi();
 
     void setupPosition(glm::vec3 &orientation,
@@ -24,6 +24,9 @@ namespace Tetris {
     void disapear();
     Tetris::Cubi &operator=(Tetris::Cubi &yes) {
       this->_window = yes._window; // ajouter tous les autres !!
+      this->_vertex = yes._vertex;
+      this->_texture = yes._texture;
+      this->_full = yes._full;
       return *this;
     }
   private:
@@ -33,9 +36,9 @@ namespace Tetris {
     glm::vec3 _scale;
     glm::vec3 _lightPos;
 
-    Tetris::Window _window;
-    Tetris::Vertex _vertex;
-    Tetris::Texture _texture;
+    Tetris::Window &_window;
+    Tetris::Vertex &_vertex;
+    Tetris::Texture &_texture;
 
     bool _full;
   };

@@ -7,13 +7,18 @@
 #include "object.hpp"
 
 namespace Tetris {
-  Game::Game(int board_x, int board_y, std::vector<Tetris::Tetrimino> &tetriminos) :
-    _tetriminos(tetriminos) {
+  Game::Game(int board_x, int board_y, std::vector<Tetris::Tetrimino> &tetriminos,
+	     Tetris::Window &window, Tetris::Vertex &vertex, Tetris::Texture &texture) :
+    _tetriminos(tetriminos),
+    _window(window),
+    _vertex(vertex),
+    _texture(texture),
+    _next(_tetriminos[0]){
     std::srand(std::time(nullptr));
     for (int i = 0; i < board_y; i += 1) {
       std::vector<Tetris::Cubi> tmp_arr;
       for (int j = 0; j < board_x; j += 1) {
-	Tetris::Cubi tmp; // to replace !
+	Tetris::Cubi tmp(_window, _vertex, _texture, false); // to replace !
 	tmp_arr.push_back(tmp);
       }
       _gameBoard.push_back(tmp_arr);
@@ -181,7 +186,7 @@ namespace Tetris {
       }
     } else {
       for (int i = 0; i < _posNext.size(); i += 1) {
-	Tetris::Cubi tmp; // replace !!
+	Tetris::Cubi tmp(_window, _vertex, _texture, false); // TO REPLACE
 	tmp.setState(true);
 	_gameBoard[_posNext[i][1]][_posNext[i][0]] = tmp;
 	this->checkLine();

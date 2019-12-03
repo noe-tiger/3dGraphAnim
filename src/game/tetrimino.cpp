@@ -6,9 +6,9 @@
 #include "tetrimino.hpp"
 
 namespace Tetris {
-  Tetrimino::Tetrimino() {}
-
-  Tetrimino::Tetrimino(const char *format) {
+  Tetrimino::Tetrimino(const char *format, const char *texture,
+		       const char *vertex, Tetris::Window &window) :
+    _window(window) {
     _str_format = format;
     std::vector<char> tmp_vec;
 
@@ -21,11 +21,28 @@ namespace Tetris {
       }
     }
     _format.push_back(tmp_vec);
+
+    int count = 0;
+    for (int i = 0; i < _str_format.size(); i += 1) {
+      if (_str_format[i] == 'x') {
+	count += 1;
+      }
+    }
+    Tetris::Vertex Vertex(vertex);
+    Tetris::Texture Texture(texture);
+    for (int i = 0; i < count; i += 1) {
+      Tetris::Cubi tmp(_window, Vertex, Texture);
+      _block.push_back(tmp);
+    }
   }
 
   Tetrimino::~Tetrimino() {
   }
 
+  std::vector<Tetris::Cubi> &Tetrimino::getBlock() {
+    return this->_block;
+  }
+  
   void Tetrimino::rotateRight() {
     std::vector<std::vector<char>> new_format;
 
@@ -58,7 +75,18 @@ namespace Tetris {
     return _format;
   }
 
-  std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath) {
+  static std::string getTexturePath(std::string path) {
+    std::stringstream ss(path);
+    std::string token;
+    std::string first;
+    std::getline(ss, first, '/');
+    while(std::getline(ss, token, '/'));
+    for (int i = 0; i < 4; i += 1)
+      token.pop_back();
+    return first + "/sources/" + token + ".bmp";
+  }
+  
+  std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath, Tetris::Window &window, const char *objpath) {
     std::vector<Tetris::Tetrimino> tet;
 
     for(const auto& p: std::filesystem::recursive_directory_iterator(dirpath)) {
@@ -69,7 +97,7 @@ namespace Tetris {
 	is.seekg (0, is.beg);
 	char * buffer = new char [length];
 	is.read (buffer,length);
-	tet.push_back(Tetris::Tetrimino(buffer));
+	tet.push_back(Tetris::Tetrimino(buffer, getTexturePath(p.path()).c_str(), objpath, window));
 	is.close();
 	delete [] buffer;
       }

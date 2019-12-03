@@ -58,6 +58,20 @@ namespace Tetris {
     return _format;
   }
 
+  static std::string getTexturePath(std::string path) {
+    std::stringstream ss(path);
+    std::string token;
+    std::string first;
+
+    std::getline(ss, first, '/');
+    while (std::getline(ss, token, '/'));
+
+    for (int i = 0; i < 4; i += 1)
+      token.pop_back();
+    token = first + "/sources/" + token + ".obj";
+    return token;
+  }
+  
   std::vector<Tetris::Tetrimino> getTetrimino(std::string dirpath) {
     std::vector<Tetris::Tetrimino> tet;
 
@@ -69,6 +83,7 @@ namespace Tetris {
 	is.seekg (0, is.beg);
 	char * buffer = new char [length];
 	is.read (buffer,length);
+	std::cout << getTexturePath(p.path()) << std::endl;
 	tet.push_back(Tetris::Tetrimino(buffer));
 	is.close();
 	delete [] buffer;

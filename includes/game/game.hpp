@@ -4,34 +4,18 @@
 #include "tetrimino.hpp"
 #include "object.hpp"
 
+#include "window.hpp"
+#include "vertex.hpp"
+#include "texture.hpp"
+
 namespace Tetris {
-  // class Cubi {
-  // public:
-  //   Cubi() {
-  //     _full = false;
-  //   }
-  //   ~Cubi() {}
-
-  //   void draw() {}
-
-  //   bool full() { // ADD CA DANS L AUTRE CUBI
-  //     return _full;
-  //   }
-
-  //   void setState(bool state) { // ADD CA DANS L AUTRE CUBI
-  //     _full = state;
-  //   }
-
-  //   void disapear() { // ADD FOR QUICK ANIMATION
-  //     _full = false;
-  //   }
-  // private:
-  //   bool _full;
-  // };
-
   class Game {
   public:
-    Game(int board_x, int board_y, std::vector<Tetris::Tetrimino> &tetriminos);
+    Game(int board_x, int board_y,
+	 std::vector<Tetris::Tetrimino> &tetriminos,
+	 Tetris::Window &window,
+	 Tetris::Vertex &vertex,
+	 Tetris::Texture &texture);
     ~Game();
 
     void print();
@@ -55,5 +39,9 @@ namespace Tetris {
     std::vector<std::vector<int>> _posNext;
     int _board_x, _board_y;
     size_t _score;
+
+    Tetris::Window &_window;
+    Tetris::Vertex &_vertex;
+    Tetris::Texture &_texture;
   };
 }

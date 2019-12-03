@@ -5,19 +5,16 @@
 #include "controls.hpp"
 #include "object.hpp"
 
-namespace Tetris {
-  Cubi::Cubi() {
-    _full = false;
-  }
-  
+namespace Tetris {  
   Cubi::Cubi(Tetris::Window &window,
 	     Tetris::Vertex &vertex,
-	     Tetris::Texture &texture)
+	     Tetris::Texture &texture,
+	     bool full) :
+    _window(window),
+    _vertex(vertex),
+    _texture(texture)
   {
-    _window = window;
-    _vertex = vertex;
-    _texture = texture;
-    _full = true;
+    _full = full;
   }
 
   Cubi::~Cubi()

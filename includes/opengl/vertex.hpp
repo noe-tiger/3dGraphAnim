@@ -7,7 +7,7 @@
 namespace Tetris {
   class Vertex  {
   public:
-    Vertex();
+    // Vertex();
     Vertex(const char *filename);
     ~Vertex();
 

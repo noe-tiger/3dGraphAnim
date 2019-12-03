@@ -8,10 +8,6 @@
 #include "window.hpp"
 
 namespace Tetris {
-  Window::Window()
-  {
-  }
-
   Window::Window(const char *vertexFile, const char *shaderFile) {
     if (!glfwInit()) {
       std::cerr << "failed to init glfw" << std::endl;
