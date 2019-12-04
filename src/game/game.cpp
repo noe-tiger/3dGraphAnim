@@ -248,6 +248,22 @@ namespace Tetris {
     return _posNext;
   }
 
+  const std::vector<std::vector<int>> Game::getFallingPos(Tetris::Tetrimino tet, int x, int y) {
+    std::vector<std::vector<int>> position;
+    const auto format = tet.getFormat();
+    for (int i = 0; i < format.size(); i += 1) {
+      for (int j = 0; j < format[i].size(); j += 1) {
+    	std::vector<int> new_position;
+	if (format[i][j] == 'x') {
+	  new_position.push_back(j + x);
+	  new_position.push_back(i + y);
+	  position.push_back(new_position);
+	}
+      }
+    }
+    return position;
+  }
+
   const size_t Game::getScore() {
     return _score;
   }

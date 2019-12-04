@@ -29,6 +29,7 @@ namespace Tetris {
     const std::vector<std::vector<Tetris::Cubi *>> &getBoard();
     const Tetris::Tetrimino &getFalling();
     const std::vector<std::vector<int>> &getFallingPos();
+    const std::vector<std::vector<int>> getFallingPos(Tetris::Tetrimino, int x, int y);
     const size_t getScore();
     const size_t getTetID();
   private:

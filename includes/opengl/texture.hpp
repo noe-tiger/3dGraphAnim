@@ -9,7 +9,6 @@
 namespace Tetris {
   class Texture  {
   public:
-    // Texture();
     Texture(const char *texture);
     ~Texture();
 

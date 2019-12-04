@@ -12,6 +12,57 @@
 
 #include "game.hpp"
 
+struct animation {
+  std::vector<Tetris::Cubi *> cubi;
+  int id;
+  int depth;
+  float x, y;
+  float speed;
+};
+
+void animate(Tetris::Window &window, std::vector<Tetris::Tetrimino> &tet,
+	     std::vector<Tetris::Texture *> &textures, Tetris::Vertex &vertex, Tetris::Game &game) {
+  static std::vector<animation *> anim;
+  static size_t speed = 100.0;
+  int x = game.getFormat()[0];
+  int y = game.getFormat()[1];
+
+  if (anim.size() < 100) {
+    animation *newAnim = new animation;
+    newAnim->id = std::rand() % textures.size();
+    newAnim->speed = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/10));
+    newAnim->x = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (x * 3))) - (x * 1.5);
+    newAnim->y = y * 2 + (std::rand() % 10 - 5);
+    newAnim->depth = (std::rand() % 8);
+    for (int i = 0; i < game.getFallingPos(tet[newAnim->id], newAnim->x, newAnim->y).size(); i += 1) {
+      newAnim->cubi.push_back(new Tetris::Cubi(window, vertex, *textures[newAnim->id]));
+    }
+    anim.push_back(newAnim);
+  }
+  for (const auto &elem : anim) {
+    elem->y -= elem->speed / 100;
+    if (elem->y < -y * 2)
+      elem->y = y * 2;
+    auto positions = game.getFallingPos(tet[elem->id], elem->x, 1);
+    glm::vec3 scale(1.0, 1.0, 1.0);
+    glm::vec3 orientation(0.0, 0.0, 0.0);
+    for (int i = 0; i < elem->cubi.size(); i += 1) {
+      glm::vec3 position(positions[i][0] * 2 + (elem->x), positions[i][1] * 2 + elem->y,
+			 -(x > y ? x : y) * 3 - (5 + elem->depth));
+      glm::vec3 light(elem->x + 10, elem->y + 10, -(x > y ? x : y) * 3 + 10);
+      elem->cubi[i]->setupPosition(orientation, position, scale, light);
+      elem->cubi[i]->draw();
+    }
+  }
+  
+  // for each elem
+  //    faire descendre
+  //    if trop bas
+  //        pop elem
+  // if nb_elem < x * y
+  //    map.append(new elem)
+}
+
 void showBoardEdge(std::vector<Tetris::Cubi> &boardEdge, int x, int y) {
   glm::vec3 scale(1.0, 1.0, 1.0);
   glm::vec3 orientation(0.0, 0.0, 0.0);
@@ -129,6 +180,8 @@ int main()
       }
     }
 
+    animate(window, tet, textures, boardVertex, game);
+    
     window.update();
   } while(!window.close());
 

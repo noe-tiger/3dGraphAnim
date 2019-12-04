@@ -5,7 +5,6 @@
 namespace Tetris {
   class Window {
   public:
-    // Window();
     Window(const char *vertexFile, const char *shaderFile);
     ~Window();
 
