@@ -46,6 +46,6 @@ then execute the binary file located at :
   /build/bin/tetris-binary.exe
 ```
 
-## Authow
+## Author
 
 [Noé TIGER](noe.tiger192@gmail.com)
